@@ -2,34 +2,58 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateAccountDto } from './dto/create-account.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
-  async create(createUserDto: any) {
-    console.log('creating...', createUserDto);
-    const test = '6462f91915a1a416a2854cb1';
+  async create(createUserDto: CreateUserDto) {
     return await this.prismaService.user.create({
       data: {
-        auth_time: 'hello world',
-        // profile: {
-        //   full_name: createUserDto.profile.fullName,
-        //   gender: createUserDto.profile.gender,
-        //   dob: createUserDto.profile.dob,
-        //   about: createUserDto.profile.bio,
-        //   address: {
-        //     provide: createUserDto.profile.address.provide,
-        //     district: createUserDto.profile.address.district,
-        //     ward: createUserDto.profile.address.ward,
-        //   },
-        //   avatar: createUserDto.profile.avatar,
-        //   background: createUserDto.profile.background,
-        // },
-        // auth_time: new Date(createUserDto.authTime),
-        // is_active: createUserDto.isActive,
+        profile: {
+          full_name: createUserDto.profile.fullName,
+          gender: createUserDto.profile.gender,
+          dob: createUserDto.profile.dob,
+          about: createUserDto.profile.bio,
+          address: {
+            provide: createUserDto.profile.address.provide,
+            district: createUserDto.profile.address.district,
+            ward: createUserDto.profile.address.ward,
+          },
+          avatar: createUserDto.profile.avatar,
+          background: createUserDto.profile.background,
+        },
+        is_active: createUserDto.isActive,
       },
     });
+  }
+
+  async createAccount(createAccountDto: CreateAccountDto) {
+    return await this.prismaService.account.create({
+      data: {
+        uid: createAccountDto.uid,
+        providers: createAccountDto.providerIds,
+        user: {
+          connect: {
+            id: createAccountDto.userId,
+          },
+        },
+      },
+    });
+  }
+
+  async findAccountByUID(uid: string) {
+    const account = await this.prismaService.account.findUnique({
+      where: {
+        uid,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return account;
   }
 
   async findAll() {

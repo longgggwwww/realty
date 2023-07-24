@@ -8,8 +8,7 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { auth } from 'firebase-admin';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 // import { EmbedBuilder, WebhookClient } from 'discord.js';
 
 // kết nối discord webhook
@@ -23,7 +22,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly prisma: PrismaService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   @Post('login')
@@ -36,20 +35,23 @@ export class AuthController {
     // });
 
     try {
-      // Xác thực token với firebase-admin
-      const decoded = await auth().verifyIdToken(loginDto.token);
+      // Xác thực token với firebase
+      const userCred = await this.authService.getUserFromFirebase(
+        loginDto.token,
+      );
 
       // Tạo tài khoản nếu là người dùng mới
-      const user = await this.authService.getOrCreateUser(decoded);
-      console.log('get user:', user);
+      const account = await this.authService.getOrCreateUser(userCred);
 
-      // Tạo token (dành riêng cho hệ thống)
-      const token = await this.authService.generateToken(user as any);
+      return account;
 
-      return {
-        user,
-        token,
-      };
+      // Tạo token của hệ thống
+      // const token = await this.authService.generateToken(user as any);
+
+      // return {
+      //   user,
+      //   token,
+      // };
     } catch (err) {
       console.log(err);
       throw new UnauthorizedException(err);

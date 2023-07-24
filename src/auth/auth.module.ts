@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller';
 import { PermissionsGuard } from './permission.guard';
 import { UsersModule } from '../users/users.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { FirebaseAdminModule } from 'src/firebase-admin/firebase-admin.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PrismaModule } from '../prisma/prisma.module';
       },
     }),
     UsersModule,
+    FirebaseAdminModule,
     PrismaModule,
   ],
   controllers: [AuthController],
