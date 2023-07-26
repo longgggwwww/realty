@@ -7,7 +7,8 @@ import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { EventsModule } from './events/events.module';
-import { FirebaseAdminModule } from './firebase-admin/firebase-admin.module';
+import { AccountsService } from './accounts/accounts.service';
+import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [
@@ -17,9 +18,9 @@ import { FirebaseAdminModule } from './firebase-admin/firebase-admin.module';
     RolesModule,
     PermissionsModule,
     EventsModule,
-    FirebaseAdminModule,
+    FirebaseModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AccountsService],
 })
 export class AppModule {}

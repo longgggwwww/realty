@@ -1,22 +1,21 @@
 export class CreateUserDto {
   profile: Profile;
-  isActive: boolean;
+  disabled: boolean;
 }
 
 type Profile = {
-  fullName: string;
-  gender?: boolean;
-  email: string;
-  emailVerified: boolean;
+  name?: string;
   dob?: Date;
-  bio?: string;
-  address?: Address;
-  avatar: string;
-  background: string;
-};
-
-type Address = {
-  provide: string;
-  district: string;
-  ward: string;
+  gender?: boolean;
+  about?: string;
+  email?: string;
+  emailVerified?: boolean;
+  phone?: string;
+  address?: {
+    lat: number;
+    lng: number;
+    detail: string;
+  };
+  avatar?: string;
+  background?: string;
 };

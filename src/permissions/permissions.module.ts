@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { PermissionsController } from './permissions.controller';
-import { FirebaseAdminModule } from 'src/firebase-admin/firebase-admin.module';
+import { FirebaseModule } from '../firebase/firebase.module';
 
 @Module({
-  imports: [FirebaseAdminModule],
+  imports: [FirebaseModule],
   controllers: [PermissionsController],
   providers: [PermissionsService],
 })

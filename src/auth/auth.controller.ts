@@ -1,75 +1,44 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UnauthorizedException,
-  BadGatewayException,
-} from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { AccountsService } from '../accounts/accounts.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { PrismaService } from '../prisma/prisma.service';
-// import { EmbedBuilder, WebhookClient } from 'discord.js';
-
-// kết nối discord webhook
-// const webhookClient = new WebhookClient({
-//   url: 'https://discord.com/api/webhooks/1131780591524773969/C969uE7xlTDZlfiKBtEkYb73I61t4-4bU4iiAIc2patvoasD7dtt4P557blkxUd7ROSi',
-// });
-
-// const embed = new EmbedBuilder().setTitle('Some Title').setColor(0x00ffff);
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
-    private readonly prismaService: PrismaService,
+    private readonly auth: AuthService,
+    private readonly account: AccountsService,
+    private readonly firebase: FirebaseService,
   ) {}
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    // webhookClient.send({
-    //   content: `Đang test login với body: ${JSON.stringify(loginDto)}`,
-    //   username: 'login',
-    //   avatarURL: 'https://i.imgur.com/AfFp7pu.png',
-    //   embeds: [embed],
-    // });
-
     try {
-      // Xác thực token với firebase
-      const userCred = await this.authService.getUserFromFirebase(
-        loginDto.token,
-      );
+      const user = await this.firebase.getUser(loginDto.token);
 
       // Tạo tài khoản nếu là người dùng mới
-      const account = await this.authService.getOrCreateUser(userCred);
+      let account = await this.account.findByUID(user.uid);
+      if (!account) {
+        account = await this.account.create(user);
+      }
 
-      return account;
+      // Tạo token (cái này khác Firebase token, chỉ dùng cho API)
+      const token = await this.auth.generateToken({ id: account.userId });
 
-      // Tạo token của hệ thống
-      // const token = await this.authService.generateToken(user as any);
-
-      // return {
-      //   user,
-      //   token,
-      // };
+      return {
+        user: account,
+        token,
+      };
     } catch (err) {
       console.log(err);
       throw new UnauthorizedException(err);
     }
   }
 
-  @Post('regist')
-  async regist(@Body() data: any) {
-    try {
-      // Kiểm tra
-    } catch (err) {
-      console.log(err);
-      throw new BadGatewayException(err);
-    }
-  }
-
   @Post()
   refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    // return this.authService.generateToken(refreshTokenDto.token);
+    return this.auth.generateToken({ id: refreshTokenDto.token });
   }
 }

@@ -6,7 +6,8 @@ import { AuthController } from './auth.controller';
 import { PermissionsGuard } from './permission.guard';
 import { UsersModule } from '../users/users.module';
 import { PrismaModule } from '../prisma/prisma.module';
-import { FirebaseAdminModule } from 'src/firebase-admin/firebase-admin.module';
+import { FirebaseModule } from '../firebase/firebase.module';
+import { AccountsService } from '../accounts/accounts.service';
 
 @Module({
   imports: [
@@ -14,16 +15,17 @@ import { FirebaseAdminModule } from 'src/firebase-admin/firebase-admin.module';
       global: true,
       secret: process.env.ACCESS_TOKEN_SECRET,
       signOptions: {
-        expiresIn: '60s',
+        expiresIn: '59m',
       },
     }),
     UsersModule,
-    FirebaseAdminModule,
+    FirebaseModule,
     PrismaModule,
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
+    AccountsService,
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,

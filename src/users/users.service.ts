@@ -2,54 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateAccountDto } from './dto/create-account.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    return await this.prismaService.user.create({
+    return await this.prisma.user.create({
       data: {
         profile: {
-          full_name: createUserDto.profile.fullName,
-          gender: createUserDto.profile.gender,
+          name: createUserDto.profile.name,
           dob: createUserDto.profile.dob,
-          about: createUserDto.profile.bio,
-          address: {
-            provide: createUserDto.profile.address.provide,
-            district: createUserDto.profile.address.district,
-            ward: createUserDto.profile.address.ward,
-          },
+          gender: createUserDto.profile.gender,
+          about: createUserDto.profile.about,
+          phone: createUserDto.profile.phone,
+          email: createUserDto.profile.email,
+          emailVerified: createUserDto.profile.emailVerified,
           avatar: createUserDto.profile.avatar,
           background: createUserDto.profile.background,
         },
-        is_active: createUserDto.isActive,
-      },
-    });
-  }
-
-  async createAccount(createAccountDto: CreateAccountDto) {
-    return await this.prismaService.account.create({
-      data: {
-        uid: createAccountDto.uid,
-        providers: createAccountDto.providerIds,
-        user: {
-          connect: {
-            id: createAccountDto.userId,
-          },
-        },
+        disabled: createUserDto.disabled,
       },
     });
   }
 
   async findAccountByUID(uid: string) {
-    const account = await this.prismaService.account.findUnique({
+    const account = await this.prisma.account.findUnique({
       where: {
         uid,
       },
       include: {
-        user: true,
+        User: true,
       },
     });
 
@@ -57,19 +40,11 @@ export class UsersService {
   }
 
   async findAll() {
-    console.log('find all ...');
-    return await this.prismaService.user.findFirst();
+    return await this.prisma.user.findFirst();
   }
 
   async findOne(id: string) {
-    console.log('debug:', id);
-    return await this.prismaService.user.findMany({});
-
-    // return await this.prismaService.user.findUnique({
-    //   where: {
-    //     id,
-    //   },
-    // });
+    return await this.prisma.user.findMany({});
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
@@ -77,7 +52,7 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    return this.prismaService.user.delete({
+    return this.prisma.user.delete({
       where: {
         id,
       },
