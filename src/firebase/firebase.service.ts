@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import {} from 'firebase-admin/storage';
 import { firebaseConfig } from './firebase-config';
 
 @Injectable()
@@ -9,11 +10,16 @@ export class FirebaseService {
   constructor() {
     this.app = admin.initializeApp({
       credential: admin.credential.cert({ ...firebaseConfig }),
+      storageBucket: 'hello-world',
     });
   }
 
   getAuth() {
     return this.app.auth();
+  }
+
+  getBucket() {
+    return this.app.storage().bucket();
   }
 
   async getUser(token: string) {

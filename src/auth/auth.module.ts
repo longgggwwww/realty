@@ -5,9 +5,9 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PermissionsGuard } from './permission.guard';
 import { UsersModule } from '../users/users.module';
-import { PrismaModule } from '../prisma/prisma.module';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { AccountsService } from '../accounts/accounts.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -18,9 +18,9 @@ import { AccountsService } from '../accounts/accounts.service';
         expiresIn: '59m',
       },
     }),
+    PrismaModule,
     UsersModule,
     FirebaseModule,
-    PrismaModule,
   ],
   controllers: [AuthController],
   providers: [

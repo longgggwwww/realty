@@ -25,7 +25,7 @@ export class AuthController {
       }
 
       // Tạo token (cái này khác Firebase token, chỉ dùng cho API)
-      const token = await this.auth.generateToken({ id: account.userId });
+      const token = this.auth.generateToken({ id: account.userId });
 
       return {
         user: account,

@@ -6,7 +6,7 @@ import { JwtPayload } from './entities/jwt-payload.entity';
 export class AuthService {
   constructor(private jwt: JwtService) {}
 
-  async generateToken(payload: JwtPayload) {
-    return await this.jwt.signAsync(payload);
+  generateToken(payload: JwtPayload) {
+    return this.jwt.sign(payload);
   }
 }

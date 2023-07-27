@@ -1,5 +1,5 @@
 import { ServiceAccount } from 'firebase-admin';
-import * as serviceAccount from '../../firebase-admin.test.json';
+import * as serviceAccount from '../../firebase-admin.json';
 
 const firebaseConfig: ServiceAccount = {
   projectId: serviceAccount.project_id,
