@@ -28,7 +28,17 @@ export class EstateTypesService {
     });
   }
 
-  update(id: string, updateEstateTypeDto: UpdateEstateTypeDto) {
+  async update(id: string, updateEstateTypeDto: UpdateEstateTypeDto) {
+    await this.prisma.estateType.update({
+      where: {
+        id,
+      },
+      data: {
+        label: updateEstateTypeDto.label,
+        icon: updateEstateTypeDto.icon,
+      },
+    });
+
     return `This action updates a #${id} estateType`;
   }
 

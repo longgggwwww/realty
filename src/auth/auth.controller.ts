@@ -4,6 +4,7 @@ import { AccountsService } from '../accounts/accounts.service';
 import { FirebaseService } from '../firebase/firebase.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -13,6 +14,7 @@ export class AuthController {
     private readonly firebase: FirebaseService,
   ) {}
 
+  @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     try {
@@ -37,6 +39,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('/refresh-token')
   refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.auth.generateToken({ id: refreshTokenDto.token });

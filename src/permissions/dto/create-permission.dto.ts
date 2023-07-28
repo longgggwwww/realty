@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreatePermissionDto {
   @IsNotEmpty()
@@ -8,4 +8,8 @@ export class CreatePermissionDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  groupId: string;
 }

@@ -23,14 +23,14 @@ export class AccountsService {
     const account = await this.prisma.account.create({
       data: {
         uid: record.uid,
-        User: {
+        user: {
           connect: {
             id: user.id,
           },
         },
       },
       include: {
-        User: true,
+        user: true,
       },
     });
 
@@ -43,7 +43,7 @@ export class AccountsService {
         uid,
       },
       include: {
-        User: true,
+        user: true,
       },
     });
   }

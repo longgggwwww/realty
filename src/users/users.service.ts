@@ -32,7 +32,7 @@ export class UsersService {
         uid,
       },
       include: {
-        User: true,
+        user: true,
       },
     });
 
