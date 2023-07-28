@@ -8,7 +8,7 @@ export class EstateTypesService {
   constructor(private prisma: PrismaService) {}
 
   async create(createEstateTypeDto: CreateEstateTypeDto) {
-    return await this.prisma.category.create({
+    return await this.prisma.estateType.create({
       data: {
         label: createEstateTypeDto.label,
         icon: createEstateTypeDto.icon,
@@ -17,11 +17,11 @@ export class EstateTypesService {
   }
 
   async findAll() {
-    return await this.prisma.category.findMany();
+    return await this.prisma.estateType.findMany();
   }
 
   async findOne(id: string) {
-    return this.prisma.category.findUnique({
+    return this.prisma.estateType.findUnique({
       where: {
         id,
       },
@@ -33,7 +33,7 @@ export class EstateTypesService {
   }
 
   remove(id: string) {
-    return this.prisma.category.delete({
+    return this.prisma.estateType.delete({
       where: {
         id,
       },

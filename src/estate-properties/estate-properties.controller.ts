@@ -16,7 +16,6 @@ import { UpdateEstatePropertyDto } from './dto/update-estate-property.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { GgdriveService } from 'src/ggdrive/ggdrive.service';
-import { Readable } from 'stream';
 
 @Controller('estate-properties')
 export class EstatePropertiesController {

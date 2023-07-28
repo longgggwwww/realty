@@ -37,7 +37,7 @@ export class AuthController {
     }
   }
 
-  @Post()
+  @Post('/refresh-token')
   refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.auth.generateToken({ id: refreshTokenDto.token });
   }

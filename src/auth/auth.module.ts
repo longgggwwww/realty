@@ -8,6 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { AccountsService } from '../accounts/accounts.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { AuthGuard } from './auth.guard';
 
 @Module({
   imports: [
@@ -26,6 +27,10 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   providers: [
     AuthService,
     AccountsService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,
