@@ -20,24 +20,23 @@ import { GgdriveService } from 'src/ggdrive/ggdrive.service';
 @Controller('estate-properties')
 export class EstatePropertiesController {
   constructor(
-    private readonly estatePropertiesService: EstatePropertiesService,
-    private readonly firebase: FirebaseService,
+    private readonly estateProperties: EstatePropertiesService,
     private readonly ggdrive: GgdriveService,
   ) {}
 
   @Post()
   create(@Body() createEstatePropertyDto: CreateEstatePropertyDto) {
-    return this.estatePropertiesService.create(createEstatePropertyDto);
+    return this.estateProperties.create(createEstatePropertyDto);
   }
 
   @Get()
   findAll() {
-    return this.estatePropertiesService.findAll();
+    return this.estateProperties.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.estatePropertiesService.findOne(+id);
+    return this.estateProperties.findOne(id);
   }
 
   @Patch(':id')
@@ -45,12 +44,12 @@ export class EstatePropertiesController {
     @Param('id') id: string,
     @Body() updateEstatePropertyDto: UpdateEstatePropertyDto,
   ) {
-    return this.estatePropertiesService.update(+id, updateEstatePropertyDto);
+    return this.estateProperties.update(id, updateEstatePropertyDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.estatePropertiesService.remove(+id);
+    return this.estateProperties.remove(id);
   }
 
   @Post('upload')

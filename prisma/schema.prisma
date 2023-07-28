@@ -146,7 +146,8 @@ model EstateType {
   icon  String
 
   // Bài viết thuộc loại hình bất động sản này
-  posts Post[]
+  posts          Post[]
+  EstateProperty EstateProperty[]
 
   @@map("estate-types")
 }
@@ -162,10 +163,19 @@ model EstateUtility {
 
 // Thuộc tính của bất động sản
 model EstateProperty {
-  id    String             @id @default(auto()) @map("_id") @db.ObjectId
-  label String
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  key   String @unique
+  title String
   icon  String
-  type  EstatePropertyType
+
+  // Thuộc loại bds nào
+  owner   EstateType @relation(fields: [ownerId], references: [id])
+  ownerId String     @db.ObjectId
+
+  options      String[]
+  isFilterItem Boolean
+  dataType     String
+  unit         String?
 
   @@map("estate-properties")
 }
