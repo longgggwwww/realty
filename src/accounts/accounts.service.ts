@@ -16,6 +16,7 @@ export class AccountsService {
         emailVerified: record.emailVerified,
         avatar: record.photoURL,
       },
+      providers: record.providerData.map((provider) => provider.providerId),
       disabled: record.disabled,
     });
 

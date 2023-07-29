@@ -18,9 +18,13 @@ export class UsersService {
           phone: createUserDto.profile.phone,
           email: createUserDto.profile.email,
           emailVerified: createUserDto.profile.emailVerified,
-          avatar: createUserDto.profile.avatar,
-          background: createUserDto.profile.background,
+          address: {
+            provide: createUserDto.profile.address.provider,
+            district: createUserDto.profile.address.district,
+            ward: createUserDto.profile.address.ward,
+          },
         },
+        providers: createUserDto.providers,
         disabled: createUserDto.disabled,
       },
     });

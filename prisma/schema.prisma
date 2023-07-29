@@ -15,6 +15,7 @@ model User {
   profile  Profile?
   disabled Boolean  @default(false)
 
+  // Tài khoản liên kết
   accounts Account[]
 
   // Vai trò người dùng
@@ -31,42 +32,13 @@ model User {
   // Bài viết đã lưu
   savedPosts Post[] @relation("UserSavePost")
 
-  // Các loại tài khoản đã liên kết
+  // Loại tài khoản đã liên kết: phone, facebook, google
   providers String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
-}
-
-model Post {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  author   User   @relation(name: "UserCreatePost", fields: [authorId], references: [id])
-  authorId String @db.ObjectId
-
-  savedBy   User?   @relation(name: "UserSavePost", fields: [savedById], references: [id])
-  savedById String? @db.ObjectId
-
-  title       String
-  type        Boolean
-  description String
-  price       BigInt
-  address     Address
-
-  // Loại hình bất động sản
-  estateType EstateType @relation(fields: [categoryId], references: [id])
-  categoryId String     @db.ObjectId
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("posts")
-}
-
-model Setting {
-  id String @id @map("_id") @db.ObjectId
 }
 
 type Profile {
@@ -96,29 +68,47 @@ model Account {
   @@map("accounts")
 }
 
+model Post {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  title       String
+  type        Boolean
+  description String
+  price       String
+  address     Address
+
+  author   User   @relation(name: "UserCreatePost", fields: [authorId], references: [id])
+  authorId String @db.ObjectId
+
+  // Bài viết này được lưu bởi ai
+  savedBy   User?   @relation(name: "UserSavePost", fields: [savedById], references: [id])
+  savedById String? @db.ObjectId
+
+  // Loại hình bất động sản
+  estateType   EstateType @relation(fields: [estateTypeId], references: [id])
+  estateTypeId String     @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("posts")
+}
+
 model Role {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   name  String
   level Int
 
-  user User[]
-
   permissions   Permission[] @relation(fields: [permissionIds], references: [id])
   permissionIds String[]     @db.ObjectId
+
+  // Hiện tại, user nào đang có role này?
+  user User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("roles")
-}
-
-// Phân loại quyền hạn
-model PermissionGroup {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  permissions Permission[]
-
-  @@map("permission-groups")
 }
 
 model Permission {
@@ -130,13 +120,24 @@ model Permission {
   group   PermissionGroup @relation(fields: [groupId], references: [id])
   groupId String          @db.ObjectId
 
+  // Hiện tại, role nào đang chứa permission này
   roles   Role[]   @relation(fields: [roleIds], references: [id])
   roleIds String[] @db.ObjectId
 
+  // Hiện tại, user nào dùng permission này làm permission đặc biệt
   users   User[]   @relation(fields: [userIds], references: [id])
   userIds String[] @db.ObjectId
 
   @@map("permissions")
+}
+
+// Phân loại quyền hạn
+model PermissionGroup {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  permissions Permission[]
+
+  @@map("permission-groups")
 }
 
 // Loại hình của bất động sản
@@ -145,16 +146,16 @@ model EstateType {
   label String
   icon  String
 
-  // Bài viết thuộc loại hình bất động sản này
-  posts Post[]
-
   properties  EstateProperty[] @relation(fields: [propertyIds], references: [id])
   propertyIds String[]         @db.ObjectId
+
+  // Bài viết thuộc loại hình bất động sản này
+  posts Post[]
 
   @@map("estate-types")
 }
 
-// Thuộc tính của bất động sản
+// Thuộc tính của bds
 model EstateProperty {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   key   String @unique
@@ -173,7 +174,7 @@ model EstateProperty {
   @@map("estate-properties")
 }
 
-// Tiện ích của bất động sản
+// Tiện ích của bds
 model EstateUtility {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   label String
@@ -192,4 +193,8 @@ enum EstatePropertyType {
   AREA
   SIZE
   BOOL
+}
+
+model Setting {
+  id String @id @map("_id") @db.ObjectId
 }
