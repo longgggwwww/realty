@@ -19,8 +19,8 @@ export class CreateEstatePropertyDto {
   icon: string;
 
   @IsNotEmpty()
-  @IsMongoId()
-  ownerId: string;
+  @IsMongoId({ each: true })
+  ownerIds: string[];
 
   @IsOptional()
   @IsString({ each: true })

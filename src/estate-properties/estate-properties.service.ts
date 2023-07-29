@@ -12,10 +12,10 @@ export class EstatePropertiesService {
       data: {
         key: createEstatePropertyDto.key,
         title: createEstatePropertyDto.title,
-        owner: {
-          connect: {
-            id: createEstatePropertyDto.ownerId,
-          },
+        owners: {
+          connect: createEstatePropertyDto.ownerIds.map((id) => ({
+            id,
+          })),
         },
         dataType: createEstatePropertyDto.dataType,
         options: createEstatePropertyDto.options,
@@ -29,7 +29,7 @@ export class EstatePropertiesService {
   async findAll() {
     return this.prisma.estateProperty.findMany({
       include: {
-        owner: true,
+        owners: true,
       },
     });
   }
@@ -40,7 +40,7 @@ export class EstatePropertiesService {
         id,
       },
       include: {
-        owner: true,
+        owners: true,
       },
     });
   }
@@ -53,19 +53,18 @@ export class EstatePropertiesService {
       data: {
         key: updateEstatePropertyDto.key,
         title: updateEstatePropertyDto.title,
-        owner: {
-          connect: {
-            id: updateEstatePropertyDto.ownerId,
-          },
-        },
+        owners: updateEstatePropertyDto.ownerIds
+          ? {
+              connect: updateEstatePropertyDto.ownerIds.map((id) => ({
+                id,
+              })),
+            }
+          : undefined,
         dataType: updateEstatePropertyDto.dataType,
         options: updateEstatePropertyDto.options,
         unit: updateEstatePropertyDto.unit,
         isFilterItem: updateEstatePropertyDto.isFilterItem,
         icon: updateEstatePropertyDto.icon,
-      },
-      include: {
-        owner: true,
       },
     });
   }

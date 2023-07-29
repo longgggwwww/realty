@@ -17,19 +17,16 @@ import { Public } from 'src/auth/decorators/public.decorator';
 export class EstateTypesController {
   constructor(private readonly estateTypesService: EstateTypesService) {}
 
-  @Public()
   @Post()
   create(@Body() createEstateTypeDto: CreateEstateTypeDto) {
     return this.estateTypesService.create(createEstateTypeDto);
   }
 
-  @Public()
   @Get()
   findAll() {
     return this.estateTypesService.findAll();
   }
 
-  @Public()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     try {
@@ -45,7 +42,6 @@ export class EstateTypesController {
     }
   }
 
-  @Public()
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -60,7 +56,6 @@ export class EstateTypesController {
     }
   }
 
-  @Public()
   @Delete(':id')
   async remove(@Param('id') id: string) {
     await this.estateTypesService.remove(id);

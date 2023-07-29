@@ -146,19 +146,12 @@ model EstateType {
   icon  String
 
   // Bài viết thuộc loại hình bất động sản này
-  posts          Post[]
-  EstateProperty EstateProperty[]
+  posts Post[]
+
+  properties  EstateProperty[] @relation(fields: [propertyIds], references: [id])
+  propertyIds String[]         @db.ObjectId
 
   @@map("estate-types")
-}
-
-// Tiện ích của bất động sản
-model EstateUtility {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  label String
-  icon  String
-
-  @@map("estate-utilities")
 }
 
 // Thuộc tính của bất động sản
@@ -169,8 +162,8 @@ model EstateProperty {
   icon  String
 
   // Thuộc loại bds nào
-  owner   EstateType @relation(fields: [ownerId], references: [id])
-  ownerId String     @db.ObjectId
+  owners   EstateType[] @relation(fields: [ownerIds], references: [id])
+  ownerIds String[]     @db.ObjectId
 
   options      String[]
   isFilterItem Boolean
@@ -178,6 +171,15 @@ model EstateProperty {
   unit         String?
 
   @@map("estate-properties")
+}
+
+// Tiện ích của bất động sản
+model EstateUtility {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  label String
+  icon  String
+
+  @@map("estate-utilities")
 }
 
 enum EstatePropertyType {

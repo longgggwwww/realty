@@ -12,6 +12,7 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { EstatePropertiesModule } from './estate-properties/estate-properties.module';
 import { EstateTypesModule } from './estate-types/estate-types.module';
 import { GgdriveModule } from './ggdrive/ggdrive.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { GgdriveModule } from './ggdrive/ggdrive.module';
     EstatePropertiesModule,
     EstateTypesModule,
     GgdriveModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService, AccountsService],

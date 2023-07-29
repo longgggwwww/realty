@@ -17,13 +17,20 @@ export class EstateTypesService {
   }
 
   async findAll() {
-    return await this.prisma.estateType.findMany();
+    return await this.prisma.estateType.findMany({
+      include: {
+        properties: true,
+      },
+    });
   }
 
   async findOne(id: string) {
     return this.prisma.estateType.findUnique({
       where: {
         id,
+      },
+      include: {
+        properties: true,
       },
     });
   }

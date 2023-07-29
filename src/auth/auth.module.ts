@@ -27,10 +27,10 @@ import { AuthGuard } from './auth.guard';
   providers: [
     AuthService,
     AccountsService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,
