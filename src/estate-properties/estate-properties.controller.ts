@@ -64,7 +64,7 @@ export class EstatePropertiesController {
       // const val = await this.ggdrive.checkFolderExists('hello-cc');
       // return val;
 
-      const uploadedFile = await this.cloudinary.uploadFile(file);
+      const uploadedFile = await this.cloudinary.uploadIcon(file);
 
       await this.estateProperties.update(id, {
         icon: uploadedFile.secure_url,

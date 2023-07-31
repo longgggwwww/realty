@@ -1,58 +1,76 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateEstateTypeDto } from './dto/create-estate-type.dto';
 import { UpdateEstateTypeDto } from './dto/update-estate-type.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { RemoveEstateTypeDto } from './dto/remove-estate-type.dto';
 
 @Injectable()
 export class EstateTypesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createEstateTypeDto: CreateEstateTypeDto) {
-    return await this.prisma.estateType.create({
-      data: {
-        label: createEstateTypeDto.label,
-        icon: createEstateTypeDto.icon,
-      },
-    });
+  create(createEstateTypeDto: CreateEstateTypeDto) {
+    try {
+      return this.prisma.estateType.create({
+        data: createEstateTypeDto,
+      });
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   }
 
-  async findAll() {
-    return await this.prisma.estateType.findMany({
+  findAll() {
+    return this.prisma.estateType.findMany({
       include: {
+        posts: true,
         properties: true,
       },
     });
   }
 
-  async findOne(id: string) {
+  findOne(id: string) {
     return this.prisma.estateType.findUnique({
       where: {
         id,
       },
       include: {
+        posts: true,
         properties: true,
       },
     });
   }
 
   async update(id: string, updateEstateTypeDto: UpdateEstateTypeDto) {
-    await this.prisma.estateType.update({
-      where: {
-        id,
-      },
-      data: {
-        label: updateEstateTypeDto.label,
-        icon: updateEstateTypeDto.icon,
-      },
-    });
-
-    return `This action updates a #${id} estateType`;
+    try {
+      return await this.prisma.estateType.update({
+        where: {
+          id,
+        },
+        data: updateEstateTypeDto,
+        include: {
+          posts: true,
+          properties: true,
+        },
+      });
+    } catch (err) {
+      return null;
+    }
   }
 
   remove(id: string) {
     return this.prisma.estateType.delete({
       where: {
         id,
+      },
+    });
+  }
+
+  removeBatch(removeEstateTypeDto: RemoveEstateTypeDto) {
+    return this.prisma.estateType.deleteMany({
+      where: {
+        id: {
+          in: removeEstateTypeDto.ids,
+        },
       },
     });
   }

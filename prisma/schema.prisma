@@ -159,6 +159,7 @@ model EstateType {
   label String
   icon  String
 
+  // 1 loại hình chứa nhiều thuộc tính (1 - N)
   properties  EstateProperty[] @relation(fields: [propertyIds], references: [id])
   propertyIds String[]         @db.ObjectId
 

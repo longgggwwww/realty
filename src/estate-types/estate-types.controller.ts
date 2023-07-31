@@ -6,20 +6,32 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { EstateTypesService } from './estate-types.service';
 import { CreateEstateTypeDto } from './dto/create-estate-type.dto';
 import { UpdateEstateTypeDto } from './dto/update-estate-type.dto';
-import { Public } from 'src/auth/decorators/public.decorator';
+import { RemoveEstateTypeDto } from './dto/remove-estate-type.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('estate-types')
 export class EstateTypesController {
-  constructor(private readonly estateTypesService: EstateTypesService) {}
+  constructor(
+    private readonly estateTypesService: EstateTypesService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Post()
   create(@Body() createEstateTypeDto: CreateEstateTypeDto) {
-    return this.estateTypesService.create(createEstateTypeDto);
+    const estateType = this.estateTypesService.create(createEstateTypeDto);
+    if (!estateType) {
+      throw new BadRequestException('Thao tác thất bại');
+    }
+
+    return estateType;
   }
 
   @Get()
@@ -28,37 +40,58 @@ export class EstateTypesController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    try {
-      const type = await this.estateTypesService.findOne(id);
-      if (!type) {
-        throw new NotFoundException('Không tìm thấy loại hình bất động sản');
-      }
-
-      return type;
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
+  findOne(@Param('id') id: string) {
+    return this.estateTypesService.findOne(id);
   }
 
   @Patch(':id')
-  async update(
+  update(
     @Param('id') id: string,
     @Body() updateEstateTypeDto: UpdateEstateTypeDto,
   ) {
-    try {
-      await this.estateTypesService.update(id, updateEstateTypeDto);
-      return 'Cập nhật loại hình bds thành công';
-    } catch (err) {
-      console.log(err);
-      throw err;
+    const estateType = this.estateTypesService.update(id, updateEstateTypeDto);
+    if (!estateType) {
+      throw new BadRequestException('Upload icon thất bại');
     }
+    return estateType;
+  }
+
+  // Upload icon
+  @Patch(':id/icon')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadIcon(
+    @Param('id') id: string,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    // Upload icon lên cloudinary
+    const icon = await this.cloudinaryService.uploadIcon(image);
+    if (!icon) {
+      throw new BadRequestException('Upload icon thất bại');
+    }
+
+    // Cập nhật url icon đã upload
+    const estateType = await this.estateTypesService.update(id, {
+      icon: icon.secure_url,
+    });
+    if (!estateType) {
+      console.log('go here');
+      // rollback icon
+      // this.cloudinary.removeAsset(icon.public_id);
+
+      throw new BadRequestException('Thao tác thất bại');
+    }
+
+    return estateType;
+  }
+
+  // Xóa nhiều document
+  @Delete('batch')
+  removeBatch(@Body() removeEstateTypeDto: RemoveEstateTypeDto) {
+    return this.estateTypesService.removeBatch(removeEstateTypeDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    await this.estateTypesService.remove(id);
-    return 'Xóa loại hình bds thành công';
+  remove(@Param('id') id: string) {
+    return this.estateTypesService.remove(id);
   }
 }

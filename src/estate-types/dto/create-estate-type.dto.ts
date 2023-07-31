@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
 
 export class CreateEstateTypeDto {
   @IsNotEmpty()
@@ -6,6 +6,6 @@ export class CreateEstateTypeDto {
   label: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsUrl()
   icon: string;
 }
