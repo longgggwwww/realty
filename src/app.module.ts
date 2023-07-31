@@ -14,6 +14,7 @@ import { EstateTypesModule } from './estate-types/estate-types.module';
 import { GgdriveModule } from './ggdrive/ggdrive.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PermissionGroupsModule } from './permission-groups/permission-groups.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PermissionGroupsModule } from './permission-groups/permission-groups.mo
     GgdriveModule,
     CloudinaryModule,
     PermissionGroupsModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AccountsService],

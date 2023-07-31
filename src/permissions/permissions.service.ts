@@ -20,6 +20,8 @@ export class PermissionsService {
       },
       include: {
         group: true,
+        roles: true,
+        users: true,
       },
     });
   }
@@ -28,6 +30,8 @@ export class PermissionsService {
     return this.prisma.permission.findMany({
       include: {
         group: true,
+        roles: true,
+        users: true,
       },
     });
   }
@@ -54,6 +58,11 @@ export class PermissionsService {
           },
         },
       },
+      include: {
+        group: true,
+        roles: true,
+        users: true,
+      },
     });
   }
 
@@ -61,6 +70,11 @@ export class PermissionsService {
     return this.prisma.permission.delete({
       where: {
         id,
+      },
+      include: {
+        group: true,
+        roles: true,
+        users: true,
       },
     });
   }

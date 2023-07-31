@@ -4,7 +4,7 @@ import { PermissionsController } from './permissions.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [PrismaModule, PrismaModule],
+  imports: [PrismaModule],
   controllers: [PermissionsController],
   providers: [PermissionsService],
 })

@@ -18,6 +18,7 @@ export class RolesService {
       },
       include: {
         permissions: true,
+        user: true,
       },
     });
   }
@@ -26,6 +27,7 @@ export class RolesService {
     return await this.prisma.role.findMany({
       include: {
         permissions: true,
+        user: true,
       },
     });
   }
@@ -37,6 +39,7 @@ export class RolesService {
       },
       include: {
         permissions: true,
+        user: true,
       },
     });
   }
@@ -55,6 +58,7 @@ export class RolesService {
       },
       include: {
         permissions: true,
+        user: true,
       },
     });
   }
@@ -66,6 +70,7 @@ export class RolesService {
       },
       include: {
         permissions: true,
+        user: true,
       },
     });
   }

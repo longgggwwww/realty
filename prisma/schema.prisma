@@ -23,7 +23,7 @@ model User {
   roleId String? @db.ObjectId
 
   // Các quyền đặc biệt
-  extendPermission    Permission[] @relation(fields: [extendPermissionIds], references: [id])
+  extendPermissions   Permission[] @relation(fields: [extendPermissionIds], references: [id])
   extendPermissionIds String[]     @db.ObjectId
 
   // Bài viết đã tạo
@@ -71,11 +71,8 @@ model Account {
 model Post {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  title       String
-  type        Boolean
-  description String
-  price       String
-  address     Address
+  title String
+  price String
 
   author   User   @relation(name: "UserCreatePost", fields: [authorId], references: [id])
   authorId String @db.ObjectId
@@ -87,6 +84,20 @@ model Post {
   // Loại hình bất động sản
   estateType   EstateType @relation(fields: [estateTypeId], references: [id])
   estateTypeId String     @db.ObjectId
+
+  thumbnail String
+  images    String[]
+
+  saleType String
+  status   String
+  views    Int    @default(0)
+  address  Json
+
+  utils   EstateUtility[] @relation(fields: [utilIds], references: [id])
+  utilIds String[]        @db.ObjectId
+
+  properties   EstateProperty[] @relation(fields: [propertieIds], references: [id])
+  propertieIds String[]         @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -107,6 +118,8 @@ model Role {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  AppConfig AppConfig[]
 
   @@map("roles")
 }
@@ -171,6 +184,9 @@ model EstateProperty {
   dataType     String
   unit         String?
 
+  posts   Post[]   @relation(fields: [postIds], references: [id])
+  postIds String[] @db.ObjectId
+
   @@map("estate-properties")
 }
 
@@ -179,6 +195,9 @@ model EstateUtility {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   label String
   icon  String
+
+  posts   Post[]   @relation(fields: [postIds], references: [id])
+  postIds String[] @db.ObjectId
 
   @@map("estate-utilities")
 }
@@ -197,4 +216,14 @@ enum EstatePropertyType {
 
 model Setting {
   id String @id @map("_id") @db.ObjectId
+}
+
+model AppConfig {
+  id String @id @map("_id") @db.ObjectId
+
+  // Role mặc định sẽ được set cho user mới
+  defaultRole Role   @relation(fields: [roleId], references: [id])
+  roleId      String @db.ObjectId
+
+  @@map("app-config")
 }

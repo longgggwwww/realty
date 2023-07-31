@@ -5,9 +5,9 @@ export class CreatePermissionDto {
   @IsString()
   code: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  description?: string;
+  description: string;
 
   @IsNotEmpty()
   @IsMongoId()
