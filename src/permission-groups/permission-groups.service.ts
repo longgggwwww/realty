@@ -5,18 +5,21 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PermissionGroupsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(createPermissionGroupDto: CreatePermissionGroupDto) {
-    return this.prismaService.permissionGroup.create({
+    return await this.prisma.permissionGroup.create({
       data: {
         name: createPermissionGroupDto.name,
+      },
+      include: {
+        permissions: true,
       },
     });
   }
 
   async findAll() {
-    return this.prismaService.permissionGroup.findMany({
+    return await this.prisma.permissionGroup.findMany({
       include: {
         permissions: true,
       },
@@ -24,7 +27,7 @@ export class PermissionGroupsService {
   }
 
   async findOne(id: string) {
-    return this.prismaService.permissionGroup.findUnique({
+    return await this.prisma.permissionGroup.findUnique({
       where: {
         id,
       },
@@ -35,20 +38,26 @@ export class PermissionGroupsService {
   }
 
   async update(id: string, updatePermissionGroupDto: UpdatePermissionGroupDto) {
-    return this.prismaService.permissionGroup.update({
+    return await this.prisma.permissionGroup.update({
       where: {
         id,
       },
       data: {
         name: updatePermissionGroupDto.name,
       },
+      include: {
+        permissions: true,
+      },
     });
   }
 
   async remove(id: string) {
-    return this.prismaService.permissionGroup.delete({
+    return await this.prisma.permissionGroup.delete({
       where: {
         id,
+      },
+      include: {
+        permissions: true,
       },
     });
   }
