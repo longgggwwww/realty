@@ -10,10 +10,123 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Property {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  icon        String
+
+  // Các thuộc tính
+  attrs   Attribute[] @relation(fields: [attrIds], references: [id])
+  attrIds String[]    @db.ObjectId
+
+  // Các tiện ích
+  amenities  Amenity[] @relation(fields: [amenityIds], references: [id])
+  amenityIds String[]  @db.ObjectId
+
+  // Các bài đăng sử dụng bds này
+  usedByPosts Post[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("properties") // loại bds
+}
+
+model Attribute {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique
+  name        String
+  description String?
+  sym         String
+  icon        String
+  filterable  Boolean  @default(false) // trường này có thể filter hay không
+  dataType    DataType // kiểu dữ liệu, enum này quy ước với client
+
+  // Các bds sở hữu thuộc tính này
+  properties  Property[] @relation(fields: [propertyIds], references: [id])
+  propertyIds String[]   @db.ObjectId
+
+  // Các bài đăng sử dụng thuộc tính này
+  posts   Post[]   @relation(fields: [postIds], references: [id])
+  postIds String[] @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("attributes") // thuộc tính của bds
+}
+
+enum DataType {
+  MONEY
+  TEXT
+  NUMBER
+  SELECT
+  RADIO
+  CHECKBOX
+  AREA
+  SIZE
+  BOOL
+}
+
+model Amenity {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  title String @unique @map("name")
+  icon  String @map("icon")
+
+  // Loại bds nào mới có tiện ích này
+  properties  Property[] @relation(fields: [propertyIds], references: [id])
+  propertyIds String[]   @db.ObjectId
+
+  // Bài đăng đã sử dụng tiện ích này
+  usedByPosts   Post[]   @relation(fields: [usedByPostIds], references: [id])
+  usedByPostIds String[] @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("amenities") // tiện ích của bds
+}
+
+model Post {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  title String
+  price String
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String @db.ObjectId
+
+  // Loại hình bất động sản
+  estateType   Property @relation(fields: [estateTypeId], references: [id])
+  estateTypeId String   @db.ObjectId
+
+  thumbnail String?
+  images    String[]
+
+  saleType String
+  status   String
+  views    Int    @default(0)
+  address  Json
+
+  // Thuộc tính
+  properties  Attribute[] @relation(fields: [propertyIds], references: [id])
+  propertyIds String[]    @db.ObjectId
+
+  // Tiện ích
+  utils   Amenity[] @relation(fields: [utilIds], references: [id])
+  utilIds String[]  @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("posts")
+}
+
 model User {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   profile  Profile?
-  disabled Boolean  @default(false)
+  disabled Boolean  @default(false) // vô hiệu hóa tài khoản
 
   // Tài khoản liên kết
   accounts Account[]
@@ -27,10 +140,7 @@ model User {
   extendPermissionIds String[]     @db.ObjectId
 
   // Bài viết đã tạo
-  posts Post[] @relation("UserCreatePost")
-
-  // Bài viết đã lưu
-  savedPosts Post[] @relation("UserSavePost")
+  posts Post[]
 
   // Hình thức đăng nhập đã sử dụng
   providers String[]
@@ -72,45 +182,6 @@ model Account {
   userId String @db.ObjectId
 
   @@map("accounts")
-}
-
-model Post {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  title String
-  price String
-
-  author   User   @relation(name: "UserCreatePost", fields: [authorId], references: [id])
-  authorId String @db.ObjectId
-
-  // Bài viết này được lưu bởi ai
-  savedBy   User?   @relation(name: "UserSavePost", fields: [savedById], references: [id])
-  savedById String? @db.ObjectId
-
-  // Loại hình bất động sản
-  estateType   EstateType @relation(fields: [estateTypeId], references: [id])
-  estateTypeId String     @db.ObjectId
-
-  thumbnail String?
-  images    String[]
-
-  saleType String
-  status   String
-  views    Int    @default(0)
-  address  Json
-
-  // Thuộc tính
-  properties  EstateProperty[] @relation(fields: [propertyIds], references: [id])
-  propertyIds String[]         @db.ObjectId
-
-  // Tiện ích
-  utils   EstateUtil[] @relation(fields: [utilIds], references: [id])
-  utilIds String[]     @db.ObjectId
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("posts")
 }
 
 model Role {
@@ -159,76 +230,6 @@ model PermissionGroup {
   permissions Permission[]
 
   @@map("permission-groups")
-}
-
-// Loại hình của bất động sản
-model EstateType {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  label String
-  icon  String
-
-  // 1 loại hình chứa nhiều thuộc tính (1 - N)
-  properties  EstateProperty[] @relation(fields: [propertyIds], references: [id])
-  propertyIds String[]         @db.ObjectId
-
-  // Bài viết thuộc loại hình bất động sản này
-  posts Post[]
-
-  // Các tiện ích
-  utils   EstateUtil[] @relation(fields: [utilIds], references: [id])
-  utilIds String[]     @db.ObjectId
-
-  @@map("estate-types")
-}
-
-// Thuộc tính của bds
-model EstateProperty {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  key   String @unique
-  title String
-  icon  String
-
-  // Thuộc loại bds nào
-  owners   EstateType[] @relation(fields: [ownerIds], references: [id])
-  ownerIds String[]     @db.ObjectId
-
-  options      String[]
-  isFilterItem Boolean
-  dataType     String
-  unit         String?
-
-  posts   Post[]   @relation(fields: [postIds], references: [id])
-  postIds String[] @db.ObjectId
-
-  @@map("estate-properties")
-}
-
-model EstateUtil {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  title String
-  icon  String
-
-  // Loại bds nào mới có tiện ích này
-  estates   EstateType[] @relation(fields: [estateIds], references: [id])
-  estateIds String[]     @db.ObjectId
-
-  // Bài viết nào bao gồm tiện ích này
-  posts   Post[]   @relation(fields: [postIds], references: [id])
-  postIds String[] @db.ObjectId
-
-  @@map("estate-utilities") // tiện ích của bds
-}
-
-enum EstatePropertyType {
-  MONEY
-  TEXT
-  NUMBER
-  SELECT
-  RADIO
-  CHECKBOX
-  AREA
-  SIZE
-  BOOL
 }
 
 model Setting {
