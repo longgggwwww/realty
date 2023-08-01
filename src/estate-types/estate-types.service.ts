@@ -23,6 +23,7 @@ export class EstateTypesService {
     return this.prisma.estateType.findMany({
       include: {
         posts: true,
+        utils: true,
         properties: true,
       },
     });
@@ -35,6 +36,7 @@ export class EstateTypesService {
       },
       include: {
         posts: true,
+        utils: true,
         properties: true,
       },
     });
@@ -49,6 +51,7 @@ export class EstateTypesService {
         data: updateEstateTypeDto,
         include: {
           posts: true,
+          utils: true,
           properties: true,
         },
       });

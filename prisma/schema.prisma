@@ -22,7 +22,7 @@ model User {
   role   Role?   @relation(fields: [roleId], references: [id])
   roleId String? @db.ObjectId
 
-  // Các quyền đặc biệt
+  // Quyền đặc biệt 
   extendPermissions   Permission[] @relation(fields: [extendPermissionIds], references: [id])
   extendPermissionIds String[]     @db.ObjectId
 
@@ -32,13 +32,19 @@ model User {
   // Bài viết đã lưu
   savedPosts Post[] @relation("UserSavePost")
 
-  // Loại tài khoản đã liên kết: phone, facebook, google
+  // Hình thức đăng nhập đã sử dụng
   providers String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+enum Providers {
+  phone
+  gg
+  fb
 }
 
 type Profile {
@@ -85,7 +91,7 @@ model Post {
   estateType   EstateType @relation(fields: [estateTypeId], references: [id])
   estateTypeId String     @db.ObjectId
 
-  thumbnail String
+  thumbnail String?
   images    String[]
 
   saleType String
@@ -93,11 +99,13 @@ model Post {
   views    Int    @default(0)
   address  Json
 
-  utils   EstateUtility[] @relation(fields: [utilIds], references: [id])
-  utilIds String[]        @db.ObjectId
+  // Thuộc tính
+  properties  EstateProperty[] @relation(fields: [propertyIds], references: [id])
+  propertyIds String[]         @db.ObjectId
 
-  properties   EstateProperty[] @relation(fields: [propertieIds], references: [id])
-  propertieIds String[]         @db.ObjectId
+  // Tiện ích
+  utils   EstateUtil[] @relation(fields: [utilIds], references: [id])
+  utilIds String[]     @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -166,6 +174,10 @@ model EstateType {
   // Bài viết thuộc loại hình bất động sản này
   posts Post[]
 
+  // Các tiện ích
+  utils   EstateUtil[] @relation(fields: [utilIds], references: [id])
+  utilIds String[]     @db.ObjectId
+
   @@map("estate-types")
 }
 
@@ -191,16 +203,20 @@ model EstateProperty {
   @@map("estate-properties")
 }
 
-// Tiện ích của bds
-model EstateUtility {
+model EstateUtil {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
-  label String
+  title String
   icon  String
 
+  // Loại bds nào mới có tiện ích này
+  estates   EstateType[] @relation(fields: [estateIds], references: [id])
+  estateIds String[]     @db.ObjectId
+
+  // Bài viết nào bao gồm tiện ích này
   posts   Post[]   @relation(fields: [postIds], references: [id])
   postIds String[] @db.ObjectId
 
-  @@map("estate-utilities")
+  @@map("estate-utilities") // tiện ích của bds
 }
 
 enum EstatePropertyType {

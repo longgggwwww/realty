@@ -29,7 +29,7 @@ export class CloudinaryService {
     });
   }
 
-  removeAsset(publicId: string) {
+  removeFile(publicId: string) {
     return new Promise((resolve, rejects) => {
       cloudinary.uploader.destroy(publicId, (err, res) => {
         if (err) {

@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateAccountDto {
   @IsNotEmpty()
-  @IsString()
+  @IsMongoId()
   userId: string;
 
   @IsNotEmpty()

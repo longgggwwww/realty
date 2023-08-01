@@ -16,7 +16,7 @@ import { AuthGuard } from './auth.guard';
       global: true,
       secret: process.env.ACCESS_TOKEN_SECRET,
       signOptions: {
-        expiresIn: '59m',
+        expiresIn: '59d',
       },
     }),
     PrismaModule,
@@ -27,10 +27,10 @@ import { AuthGuard } from './auth.guard';
   providers: [
     AuthService,
     AccountsService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AuthGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,

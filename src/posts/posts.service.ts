@@ -7,25 +7,59 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createPostDto: CreatePostDto) {
-    // return this.prisma.post.create({
-    //   data: {
-    //     title: createPostDto.title,
-    //     status: createPostDto.status,
-    //     address: createPostDto.address,
-    //     price: createPostDto.price,
-    //     saleType: createPostDto.saleType,
-    //   },
-    // });
-    return 'This action adds a new post';
+  async create(userId: string, createPostDto: CreatePostDto) {
+    console.log(createPostDto, createPostDto.thumbnail);
+    return await this.prisma.post.create({
+      data: {
+        title: createPostDto.title,
+        estateType: {
+          connect: {
+            id: createPostDto.estateTypeId,
+          },
+        },
+        thumbnail: createPostDto.thumbnail,
+        images: createPostDto.images,
+        author: {
+          connect: {
+            id: userId,
+          },
+        },
+        properties: {
+          connect: createPostDto.propertieIds.map((id) => ({ id })),
+        },
+        status: createPostDto.status,
+        address: createPostDto.address,
+        price: createPostDto.price,
+        saleType: createPostDto.saleType,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAll() {
+    return await this.prisma.post.findMany({
+      include: {
+        author: true,
+        estateType: true,
+        properties: true,
+        savedBy: true,
+        utils: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findOne(id: string) {
+    return await this.prisma.post.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        author: true,
+        estateType: true,
+        properties: true,
+        savedBy: true,
+        utils: true,
+      },
+    });
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
