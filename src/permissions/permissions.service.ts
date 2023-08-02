@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { DeletePermissionsDto } from './dto/delete-permission.dto';
 
 @Injectable()
 export class PermissionsService {
@@ -9,15 +10,7 @@ export class PermissionsService {
 
   async create(createPermissionDto: CreatePermissionDto) {
     return this.prisma.permission.create({
-      data: {
-        code: createPermissionDto.code,
-        description: createPermissionDto.description,
-        group: {
-          connect: {
-            id: createPermissionDto.groupId,
-          },
-        },
-      },
+      data: createPermissionDto,
       include: {
         group: true,
         roles: true,
@@ -49,15 +42,7 @@ export class PermissionsService {
       where: {
         id,
       },
-      data: {
-        code: updatePermissionDto.code,
-        description: updatePermissionDto.description,
-        group: {
-          connect: {
-            id: updatePermissionDto.groupId,
-          },
-        },
-      },
+      data: updatePermissionDto,
       include: {
         group: true,
         roles: true,
@@ -75,6 +60,16 @@ export class PermissionsService {
         group: true,
         roles: true,
         users: true,
+      },
+    });
+  }
+
+  async removeBatch(deletePermissionsDto: DeletePermissionsDto) {
+    return await this.prisma.permission.deleteMany({
+      where: {
+        id: {
+          in: deletePermissionsDto.ids,
+        },
       },
     });
   }

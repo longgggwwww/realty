@@ -16,16 +16,16 @@ model Property {
   description String?
   icon        String
 
-  // Các thuộc tính
+  // Thuộc tính
   attrs   Attribute[] @relation(fields: [attrIds], references: [id])
   attrIds String[]    @db.ObjectId
 
-  // Các tiện ích
+  // Tiện ích
   amenities  Amenity[] @relation(fields: [amenityIds], references: [id])
   amenityIds String[]  @db.ObjectId
 
-  // Các bài đăng sử dụng bds này
-  usedByPosts Post[]
+  // Bài đăng về loại bds này
+  posts Post[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -40,14 +40,14 @@ model Attribute {
   description String?
   sym         String
   icon        String
-  filterable  Boolean  @default(false) // trường này có thể filter hay không
-  dataType    DataType // kiểu dữ liệu, enum này quy ước với client
+  filterable  Boolean  @default(false) // Thuộc tính có thể filter
+  dataType    DataType // kiểu dữ liệu đầu vào
 
-  // Các bds sở hữu thuộc tính này
+  // Loại bds chứa thuộc tính này
   properties  Property[] @relation(fields: [propertyIds], references: [id])
   propertyIds String[]   @db.ObjectId
 
-  // Các bài đăng sử dụng thuộc tính này
+  // Bài đăng chứa thuộc tính này
   posts   Post[]   @relation(fields: [postIds], references: [id])
   postIds String[] @db.ObjectId
 
@@ -70,17 +70,19 @@ enum DataType {
 }
 
 model Amenity {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  title String @unique @map("name")
-  icon  String @map("icon")
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  key         String
+  name        String
+  description String?
+  icon        String
 
-  // Loại bds nào mới có tiện ích này
+  // Loại bds chứa tiện ích này
   properties  Property[] @relation(fields: [propertyIds], references: [id])
   propertyIds String[]   @db.ObjectId
 
-  // Bài đăng đã sử dụng tiện ích này
-  usedByPosts   Post[]   @relation(fields: [usedByPostIds], references: [id])
-  usedByPostIds String[] @db.ObjectId
+  // Bài đăng chứa tiện ích này
+  posts   Post[]   @relation(fields: [postIds], references: [id])
+  postIds String[] @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -91,31 +93,34 @@ model Amenity {
 model Post {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  title String
-  price String
+  title     String
+  mode      PostMode // chế độ bài đăng: bán, cho thuê, ...
+  price     String
+  thumbnail String?
+  images    String[]
+  status    PostStatus // trạng thái bài đăng: hiển thị, chờ duyệt, đã duyệt, bị từ chối, ...
+  views     BigInt     @default(0)
+  address   Json
 
+  // Loại hình bds
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId String   @db.ObjectId
+
+  // Thuộc tính
+  attrs   Attribute[] @relation(fields: [attrIds], references: [id])
+  attrIds String[]    @db.ObjectId
+
+  // Tiện ích
+  amenities  Amenity[] @relation(fields: [amenityIds], references: [id])
+  amenityIds String[]  @db.ObjectId
+
+  // Tác giả của bài viết
   author   User   @relation(fields: [authorId], references: [id])
   authorId String @db.ObjectId
 
-  // Loại hình bất động sản
-  estateType   Property @relation(fields: [estateTypeId], references: [id])
-  estateTypeId String   @db.ObjectId
-
-  thumbnail String?
-  images    String[]
-
-  saleType String
-  status   String
-  views    Int    @default(0)
-  address  Json
-
-  // Thuộc tính
-  properties  Attribute[] @relation(fields: [propertyIds], references: [id])
-  propertyIds String[]    @db.ObjectId
-
-  // Tiện ích
-  utils   Amenity[] @relation(fields: [utilIds], references: [id])
-  utilIds String[]  @db.ObjectId
+  // Người lưu bài viết này
+  savedBy    User[]   @relation(name: "save-posts", fields: [savedByIds], references: [id])
+  savedByIds String[] @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -123,24 +128,50 @@ model Post {
   @@map("posts")
 }
 
+enum PostMode {
+  sale
+  rent
+}
+
+enum PostStatus {
+  display
+  pending
+  accept
+  reject
+  removed
+}
+
 model User {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  profile  Profile?
-  disabled Boolean  @default(false) // vô hiệu hóa tài khoản
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  dob           DateTime?
+  gender        Boolean?
+  phone         String?
+  email         String?
+  emailVerified Boolean?
+  about         String?
+  address       Address?
+  avatar        String?
+  background    String?
+  disabled      Boolean   @default(false) // vô hiệu hóa tài khoản
 
   // Tài khoản liên kết
   accounts Account[]
 
-  // Vai trò người dùng
+  // Vai trò của người dùng
   role   Role?   @relation(fields: [roleId], references: [id])
   roleId String? @db.ObjectId
 
   // Quyền đặc biệt 
-  extendPermissions   Permission[] @relation(fields: [extendPermissionIds], references: [id])
-  extendPermissionIds String[]     @db.ObjectId
+  permissions   Permission[] @relation(fields: [permissionIds], references: [id])
+  permissionIds String[]     @db.ObjectId
 
   // Bài viết đã tạo
   posts Post[]
+
+  // Bài viết đã lưu
+  savedPosts  Post[]   @relation(name: "save-posts", fields: [savePostIds], references: [id])
+  savePostIds String[] @db.ObjectId
 
   // Hình thức đăng nhập đã sử dụng
   providers String[]
@@ -157,19 +188,6 @@ enum Providers {
   fb
 }
 
-type Profile {
-  name          String?
-  dob           DateTime?
-  gender        Boolean?
-  phone         String?
-  email         String?
-  emailVerified Boolean?
-  about         String?
-  address       Address?
-  avatar        String?
-  background    String?
-}
-
 type Address {
   provide  String
   district String
@@ -177,7 +195,7 @@ type Address {
 }
 
 model Account {
-  uid    String @id @map("_id")
+  uid    String @id @map("_id") // uid từ firebase
   user   User   @relation(fields: [userId], references: [id])
   userId String @db.ObjectId
 
@@ -185,22 +203,23 @@ model Account {
 }
 
 model Role {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  name  String
-  level Int
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  level       Int
+  description String?
 
   permissions   Permission[] @relation(fields: [permissionIds], references: [id])
   permissionIds String[]     @db.ObjectId
 
-  // Hiện tại, user nào đang có role này?
-  user User[]
+  // Người dùng đang sở hữu vai trò này
+  users User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  AppConfig AppConfig[]
+  cfg Config[]
 
-  @@map("roles")
+  @@map("roles") // vai trò của người dùng
 }
 
 model Permission {
@@ -209,8 +228,8 @@ model Permission {
   description String?
 
   // Thuộc group nào
-  group   PermissionGroup @relation(fields: [groupId], references: [id])
-  groupId String          @db.ObjectId
+  group   PermGroup @relation(fields: [groupId], references: [id])
+  groupId String    @db.ObjectId
 
   // Hiện tại, role nào đang chứa permission này
   roles   Role[]   @relation(fields: [roleIds], references: [id])
@@ -220,28 +239,24 @@ model Permission {
   users   User[]   @relation(fields: [userIds], references: [id])
   userIds String[] @db.ObjectId
 
-  @@map("permissions")
+  @@map("permissions") // quyền hạn
 }
 
-// Phân loại quyền hạn
-model PermissionGroup {
+model PermGroup {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String
+  description String?
   permissions Permission[]
 
-  @@map("permission-groups")
+  @@map("permission-groups") // nhóm quyền (gom nhóm các quyền hạn có chức năng tương tự)
 }
 
-model Setting {
-  id String @id @map("_id") @db.ObjectId
-}
-
-model AppConfig {
+model Config {
   id String @id @map("_id") @db.ObjectId
 
-  // Role mặc định sẽ được set cho user mới
-  defaultRole Role   @relation(fields: [roleId], references: [id])
-  roleId      String @db.ObjectId
+  // Role mặc định cho user được tạo
+  roleDef Role   @relation(fields: [roleId], references: [id])
+  roleId  String @db.ObjectId
 
-  @@map("app-config")
+  @@map("config") // config hệ thống
 }

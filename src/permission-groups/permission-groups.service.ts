@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePermissionGroupDto } from './dto/create-permission-group.dto';
 import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { DeletePermissionGroupsDto } from './dto/delete-permission-group.dto';
 
 @Injectable()
 export class PermissionGroupsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createPermissionGroupDto: CreatePermissionGroupDto) {
-    return await this.prisma.permissionGroup.create({
-      data: {
-        name: createPermissionGroupDto.name,
-      },
+    return await this.prisma.permGroup.create({
+      data: createPermissionGroupDto,
       include: {
         permissions: true,
       },
@@ -19,7 +18,7 @@ export class PermissionGroupsService {
   }
 
   async findAll() {
-    return await this.prisma.permissionGroup.findMany({
+    return await this.prisma.permGroup.findMany({
       include: {
         permissions: true,
       },
@@ -27,7 +26,7 @@ export class PermissionGroupsService {
   }
 
   async findOne(id: string) {
-    return await this.prisma.permissionGroup.findUnique({
+    return await this.prisma.permGroup.findUnique({
       where: {
         id,
       },
@@ -38,13 +37,11 @@ export class PermissionGroupsService {
   }
 
   async update(id: string, updatePermissionGroupDto: UpdatePermissionGroupDto) {
-    return await this.prisma.permissionGroup.update({
+    return await this.prisma.permGroup.update({
       where: {
         id,
       },
-      data: {
-        name: updatePermissionGroupDto.name,
-      },
+      data: updatePermissionGroupDto,
       include: {
         permissions: true,
       },
@@ -52,12 +49,19 @@ export class PermissionGroupsService {
   }
 
   async remove(id: string) {
-    return await this.prisma.permissionGroup.delete({
+    return await this.prisma.permGroup.delete({
       where: {
         id,
       },
-      include: {
-        permissions: true,
+    });
+  }
+
+  async removeBatch(deletePermissionsGroupDto: DeletePermissionGroupsDto) {
+    return await this.prisma.permGroup.deleteMany({
+      where: {
+        id: {
+          in: deletePermissionsGroupDto.ids,
+        },
       },
     });
   }
