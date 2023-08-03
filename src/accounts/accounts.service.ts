@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { UserRecord } from 'firebase-admin/lib/auth/user-record';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AccountsService {
-  constructor(private prisma: PrismaService, private user: UsersService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private user: UsersService,
+  ) {}
 
   async create(record: UserRecord) {
     const user = await this.user.create({
@@ -21,25 +24,25 @@ export class AccountsService {
     });
 
     // Tạo tài khoản link vào người dùng mới
-    const account = await this.prisma.account.create({
-      data: {
-        uid: record.uid,
-        user: {
-          connect: {
-            id: user.id,
-          },
-        },
-      },
-      include: {
-        user: true,
-      },
-    });
+    // const account = await this.prismaService.account.create({
+    //   data: {
+    //     uid: record.uid,
+    //     user: {
+    //       connect: {
+    //         id: user.id,
+    //       },
+    //     },
+    //   },
+    //   include: {
+    //     user: true,
+    //   },
+    // });
 
-    return account;
+    // return account;
   }
 
   async findByUID(uid: string) {
-    return await this.prisma.account.findFirst({
+    return await this.prismaService.account.findFirst({
       where: {
         uid,
       },

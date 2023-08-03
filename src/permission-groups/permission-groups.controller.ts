@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { PermissionGroupsService } from './permission-groups.service';
 import { CreatePermissionGroupDto } from './dto/create-permission-group.dto';
-import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
 import { DeletePermissionGroupDto } from './dto/delete-permission-group.dto';
+import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
 
 @Controller('permission-groups')
 export class PermissionGroupsController {

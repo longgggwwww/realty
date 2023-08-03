@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
 import { DeleteRoleDto } from './dto/delete-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Injectable()
 export class RolesService {
@@ -10,7 +10,14 @@ export class RolesService {
 
   async create(createRoleDto: CreateRoleDto) {
     return await this.prismaService.role.create({
-      data: createRoleDto,
+      data: {
+        name: createRoleDto.name,
+        level: createRoleDto.level,
+        description: createRoleDto.description,
+        permissions: {
+          connect: createRoleDto.permissionIds.map((id) => ({ id })),
+        },
+      },
       include: {
         permissions: true,
         users: true,
@@ -28,7 +35,7 @@ export class RolesService {
   }
 
   async findOne(id: string) {
-    return await this.prismaService.role.findUnique({
+    const role = await this.prismaService.role.findUnique({
       where: {
         id,
       },
@@ -37,6 +44,11 @@ export class RolesService {
         users: true,
       },
     });
+    if (!role) {
+      throw new NotFoundException();
+    }
+
+    return role;
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {
@@ -44,7 +56,16 @@ export class RolesService {
       where: {
         id,
       },
-      data: updateRoleDto,
+      data: {
+        name: updateRoleDto.name,
+        level: updateRoleDto.level,
+        description: updateRoleDto.description,
+        permissions: updateRoleDto.permissionIds
+          ? {
+              connect: updateRoleDto.permissionIds.map((id) => ({ id })),
+            }
+          : undefined,
+      },
       include: {
         permissions: true,
         users: true,

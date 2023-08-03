@@ -1,37 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prismaService: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    return await this.prisma.user.create({
-      data: {
-        profile: {
-          name: createUserDto.profile.name,
-          dob: createUserDto.profile.dob,
-          gender: createUserDto.profile.gender,
-          about: createUserDto.profile.about,
-          phone: createUserDto.profile.phone,
-          email: createUserDto.profile.email,
-          emailVerified: createUserDto.profile.emailVerified,
-          address: {
-            provide: createUserDto.profile.address.provider,
-            district: createUserDto.profile.address.district,
-            ward: createUserDto.profile.address.ward,
-          },
-        },
-        providers: createUserDto.providers,
-        disabled: createUserDto.disabled,
-      },
-    });
+    // return await this.prismaService.user.create({
+    //   data: {
+    //     profile: {
+    //       name: createUserDto.profile.name,
+    //       dob: createUserDto.profile.dob,
+    //       gender: createUserDto.profile.gender,
+    //       about: createUserDto.profile.about,
+    //       phone: createUserDto.profile.phone,
+    //       email: createUserDto.profile.email,
+    //       emailVerified: createUserDto.profile.emailVerified,
+    //       address: {
+    //         provide: createUserDto.profile.address.provider,
+    //         district: createUserDto.profile.address.district,
+    //         ward: createUserDto.profile.address.ward,
+    //       },
+    //     },
+    //     providers: createUserDto.providers,
+    //     disabled: createUserDto.disabled,
+    //   },
+    // });
   }
 
   async findAccountByUID(uid: string) {
-    const account = await this.prisma.account.findUnique({
+    const account = await this.prismaService.account.findUnique({
       where: {
         uid,
       },
@@ -44,11 +44,11 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.prisma.user.findFirst();
+    return await this.prismaService.user.findFirst();
   }
 
   async findOne(id: string) {
-    return await this.prisma.user.findMany({});
+    return await this.prismaService.user.findMany({});
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
@@ -56,7 +56,7 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    return this.prisma.user.delete({
+    return this.prismaService.user.delete({
       where: {
         id,
       },
