@@ -1,16 +1,28 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { DeletePermissionsDto } from './dto/delete-permission.dto';
+import { DeletePermissionDto } from './dto/delete-permission.dto';
 
 @Injectable()
 export class PermissionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prismaService: PrismaService) {}
 
   async create(createPermissionDto: CreatePermissionDto) {
-    return this.prisma.permission.create({
-      data: createPermissionDto,
+    return await this.prismaService.permission.create({
+      data: {
+        code: createPermissionDto.code,
+        description: createPermissionDto.description,
+        group: {
+          connect: {
+            id: createPermissionDto.groupId,
+          },
+        },
+      },
       include: {
         group: true,
         roles: true,
@@ -20,7 +32,7 @@ export class PermissionsService {
   }
 
   async findAll() {
-    return this.prisma.permission.findMany({
+    return this.prismaService.permission.findMany({
       include: {
         group: true,
         roles: true,
@@ -30,19 +42,34 @@ export class PermissionsService {
   }
 
   async findOne(id: string) {
-    return this.prisma.permission.findUnique({
+    const permission = await this.prismaService.permission.findUnique({
       where: {
         id,
       },
     });
+    if (!permission) {
+      throw new NotFoundException();
+    }
+
+    return permission;
   }
 
   async update(id: string, updatePermissionDto: UpdatePermissionDto) {
-    return this.prisma.permission.update({
+    return await this.prismaService.permission.update({
       where: {
         id,
       },
-      data: updatePermissionDto,
+      data: {
+        code: updatePermissionDto.code,
+        description: updatePermissionDto.description,
+        group: updatePermissionDto.groupId
+          ? {
+              connect: {
+                id: updatePermissionDto.groupId,
+              },
+            }
+          : undefined,
+      },
       include: {
         group: true,
         roles: true,
@@ -52,7 +79,7 @@ export class PermissionsService {
   }
 
   async remove(id: string) {
-    return this.prisma.permission.delete({
+    return this.prismaService.permission.delete({
       where: {
         id,
       },
@@ -64,11 +91,11 @@ export class PermissionsService {
     });
   }
 
-  async removeBatch(deletePermissionsDto: DeletePermissionsDto) {
-    return await this.prisma.permission.deleteMany({
+  async removeBatch(deletePermissionDto: DeletePermissionDto) {
+    return await this.prismaService.permission.deleteMany({
       where: {
         id: {
-          in: deletePermissionsDto.ids,
+          in: deletePermissionDto.ids,
         },
       },
     });

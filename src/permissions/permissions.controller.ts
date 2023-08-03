@@ -6,46 +6,55 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { DeletePermissionsDto } from './dto/delete-permission.dto';
+import { DeletePermissionDto } from './dto/delete-permission.dto';
 
 @Controller('permissions')
 export class PermissionsController {
-  constructor(private readonly permission: PermissionsService) {}
+  constructor(private readonly permissionService: PermissionsService) {}
 
+  @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.permission.create(createPermissionDto);
+    return this.permissionService.create(createPermissionDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get()
   findAll() {
-    return this.permission.findAll();
+    return this.permissionService.findAll();
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.permission.findOne(id);
+    return this.permissionService.findOne(id);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updatePermissionDto: UpdatePermissionDto,
   ) {
-    return this.permission.update(id, updatePermissionDto);
+    return this.permissionService.update(id, updatePermissionDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Delete('batch')
-  removeBatch(@Body() deletePermissionsDto: DeletePermissionsDto) {
-    return this.permission.removeBatch(deletePermissionsDto);
+  removeBatch(@Body() deletePermissionDto: DeletePermissionDto) {
+    return this.permissionService.removeBatch(deletePermissionDto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.permission.remove(id);
+    return this.permissionService.remove(id);
   }
 }

@@ -1,22 +1,30 @@
 import {
-  IsArray,
+  IsInt,
   IsMongoId,
   IsNotEmpty,
-  IsNumber,
+  IsOptional,
   IsString,
+  Length,
+  Min,
 } from 'class-validator';
 
 export class CreateRoleDto {
-  @IsNotEmpty()
+  @Length(1, 225)
   @IsString()
+  @IsNotEmpty()
   name: string;
 
+  @Min(0)
+  @IsInt()
   @IsNotEmpty()
-  @IsNumber()
   level: number;
 
-  @IsNotEmpty()
-  @IsArray()
+  @Length(1, 225)
+  @IsString()
+  @IsOptional()
+  description?: string;
+
   @IsMongoId({ each: true })
+  @IsNotEmpty()
   permissionIds: string[];
 }

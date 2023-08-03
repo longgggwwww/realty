@@ -1,76 +1,71 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { DeleteRoleDto } from './dto/delete-role.dto';
 
 @Injectable()
 export class RolesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prismaService: PrismaService) {}
 
   async create(createRoleDto: CreateRoleDto) {
-    return await this.prisma.role.create({
-      data: {
-        name: createRoleDto.name,
-        level: createRoleDto.level,
-        permissions: {
-          connect: createRoleDto.permissionIds.map((id) => ({ id })),
-        },
-      },
+    return await this.prismaService.role.create({
+      data: createRoleDto,
       include: {
         permissions: true,
-        user: true,
+        users: true,
       },
     });
   }
 
   async findAll() {
-    return await this.prisma.role.findMany({
+    return await this.prismaService.role.findMany({
       include: {
         permissions: true,
-        user: true,
+        users: true,
       },
     });
   }
 
   async findOne(id: string) {
-    return await this.prisma.role.findUnique({
+    return await this.prismaService.role.findUnique({
       where: {
         id,
       },
       include: {
         permissions: true,
-        user: true,
+        users: true,
       },
     });
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {
-    return await this.prisma.role.update({
+    return await this.prismaService.role.update({
       where: {
         id,
       },
-      data: {
-        name: updateRoleDto.name,
-        level: updateRoleDto.level,
-        permissions: {
-          connect: updateRoleDto.permissionIds.map((id) => ({ id })),
-        },
-      },
+      data: updateRoleDto,
       include: {
         permissions: true,
-        user: true,
+        users: true,
       },
     });
   }
 
   async remove(id: string) {
-    return await this.prisma.role.delete({
+    return await this.prismaService.role.delete({
       where: {
         id,
       },
-      include: {
-        permissions: true,
-        user: true,
+    });
+  }
+
+  async removeBatch(deleteRoleDto: DeleteRoleDto) {
+    return await this.prismaService.role.deleteMany({
+      where: {
+        id: {
+          in: deleteRoleDto.ids,
+        },
       },
     });
   }

@@ -1,0 +1,2 @@
+DELETE {{host}}/api/roles/64c9fe18d2c8a841f809cfb4
+Authorization: Bearer {{access_token}}

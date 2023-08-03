@@ -19,22 +19,11 @@ import { AuthGuard } from './auth.guard';
         expiresIn: '59d',
       },
     }),
+    FirebaseModule,
     PrismaModule,
     UsersModule,
-    FirebaseModule,
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    AccountsService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: PermissionsGuard,
-    },
-  ],
+  providers: [AuthService, AccountsService],
 })
 export class AuthModule {}

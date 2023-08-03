@@ -1,16 +1,8 @@
-import { IsMongoId, IsNotEmpty } from 'class-validator';
+import { IsArray, IsMongoId, IsNotEmpty } from 'class-validator';
 
-export class DeletePermissionsDto {
-  @IsMongoId({
-    each: true,
-    message(validationArguments) {
-      return `${validationArguments.property}: định dạng không hợp lệ, phải là format của mongoId`;
-    },
-  })
-  @IsNotEmpty({
-    message(validationArguments) {
-      return `${validationArguments.property}: trường bắt buộc`;
-    },
-  })
+export class DeletePermissionDto {
+  @IsMongoId({ each: true })
+  @IsArray()
+  @IsNotEmpty()
   ids: string[];
 }
