@@ -19,20 +19,37 @@ import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
 import { PropertiesModule } from './properties/properties.module';
 import { AmenitiesModule } from './amenities/amenities.module';
 import { AttributesModule } from './attributes/attributes.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
-    PrismaModule.forRoot({
+    PrismaModule.forRootAsync({
       isGlobal: true,
-      prismaServiceOptions: {
-        middlewares: [loggingMiddleware()],
+      useFactory(...args) {
+        return {
+          middlewares: [loggingMiddleware()],
+        };
       },
     }),
-    JwtModule.register({
+    JwtModule.registerAsync({
       global: true,
-      secret: process.env.ACCESS_TOKEN_SECRET,
-      signOptions: {
-        expiresIn: '59d',
+      useFactory(...args) {
+        return {
+          secret: process.env.ACCESS_TOKEN_SECRET,
+          signOptions: {
+            expiresIn: '60d',
+          },
+        };
+      },
+    }),
+    MulterModule.registerAsync({
+      useFactory(...args) {
+        return {
+          limits: {
+            fileSize: parseInt(process.env.MAX_SIZE_PER_FILE_UPLOAD),
+            files: parseInt(process.env.MAX_NUMBER_FILE_UPLOAD),
+          },
+        };
       },
     }),
     AuthModule,

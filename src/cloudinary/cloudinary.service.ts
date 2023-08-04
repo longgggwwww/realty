@@ -9,7 +9,6 @@ export class CloudinaryService {
     file: Express.Multer.File,
     path: string = '',
   ): Promise<CloudinaryResponse> {
-    console.log('path here:', file, path);
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
