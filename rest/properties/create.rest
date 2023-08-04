@@ -1,0 +1,7 @@
+POST {{host}}/api/properties
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "TEST_PERMISSION"
+}

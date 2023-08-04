@@ -14,7 +14,7 @@ model Property {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
-  icon        String
+  icon        String?
 
   // Thuộc tính
   attrs   Attribute[] @relation(fields: [attrIds], references: [id])
@@ -39,7 +39,7 @@ model Attribute {
   name        String
   description String?
   sym         String
-  icon        String
+  icon        String?
   filterable  Boolean  @default(false) // thuộc tính có thể filter
   dataType    DataType // kiểu dữ liệu đầu vào
 
@@ -74,7 +74,7 @@ model Amenity {
   key         String
   name        String
   description String?
-  icon        String
+  icon        String?
 
   // Loại bds chứa tiện ích này
   properties  Property[] @relation(fields: [propertyIds], references: [id])

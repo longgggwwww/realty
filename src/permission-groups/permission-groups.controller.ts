@@ -19,25 +19,25 @@ import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
 @Controller('permission-groups')
 export class PermissionGroupsController {
   constructor(
-    private readonly permissionGroupService: PermissionGroupsService,
+    private readonly permissionGroupsService: PermissionGroupsService,
   ) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createPermissionGroupDto: CreatePermissionGroupDto) {
-    return this.permissionGroupService.create(createPermissionGroupDto);
+    return this.permissionGroupsService.create(createPermissionGroupDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Get()
   findAll() {
-    return this.permissionGroupService.findAll();
+    return this.permissionGroupsService.findAll();
   }
 
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const group = await this.permissionGroupService.findOne(id);
+    const group = await this.permissionGroupsService.findOne(id);
     if (!group) {
       throw new NotFoundException();
     }
@@ -51,7 +51,7 @@ export class PermissionGroupsController {
     @Param('id') id: string,
     @Body() updatePermissionGroupDto: UpdatePermissionGroupDto,
   ) {
-    const group = await this.permissionGroupService.update(
+    const group = await this.permissionGroupsService.update(
       id,
       updatePermissionGroupDto,
     );
@@ -65,12 +65,12 @@ export class PermissionGroupsController {
   @HttpCode(HttpStatus.OK)
   @Delete('batch')
   removeBatch(@Body() deletePermissionsGroupDto: DeletePermissionGroupDto) {
-    return this.permissionGroupService.removeBatch(deletePermissionsGroupDto);
+    return this.permissionGroupsService.removeBatch(deletePermissionsGroupDto);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.permissionGroupService.remove(id);
+    return this.permissionGroupsService.remove(id);
   }
 }

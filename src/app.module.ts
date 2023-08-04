@@ -16,6 +16,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PermissionGroupsModule } from './permission-groups/permission-groups.module';
 import { PostsModule } from './posts/posts.module';
 import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
+import { PropertiesModule } from './properties/properties.module';
+import { AmenitiesModule } from './amenities/amenities.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
     CloudinaryModule,
     PermissionGroupsModule,
     PostsModule,
+    PropertiesModule,
+    AmenitiesModule,
   ],
   controllers: [AppController],
   providers: [

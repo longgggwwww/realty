@@ -16,24 +16,24 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 
 @Controller('permissions')
 export class PermissionsController {
-  constructor(private readonly permissionService: PermissionsService) {}
+  constructor(private readonly permissionsService: PermissionsService) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.permissionService.create(createPermissionDto);
+    return this.permissionsService.create(createPermissionDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Get()
   findAll() {
-    return this.permissionService.findAll();
+    return this.permissionsService.findAll();
   }
 
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.permissionService.findOne(id);
+    return this.permissionsService.findOne(id);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -42,18 +42,18 @@ export class PermissionsController {
     @Param('id') id: string,
     @Body() updatePermissionDto: UpdatePermissionDto,
   ) {
-    return this.permissionService.update(id, updatePermissionDto);
+    return this.permissionsService.update(id, updatePermissionDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Delete('batch')
   removeBatch(@Body() deletePermissionDto: DeletePermissionDto) {
-    return this.permissionService.removeBatch(deletePermissionDto);
+    return this.permissionsService.removeBatch(deletePermissionDto);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.permissionService.remove(id);
+    return this.permissionsService.remove(id);
   }
 }
