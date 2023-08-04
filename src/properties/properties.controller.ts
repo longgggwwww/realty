@@ -11,6 +11,7 @@ import {
   UploadedFile,
   UseInterceptors,
   NotFoundException,
+  ParseFilePipe,
 } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -43,11 +44,11 @@ export class PropertiesController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('icon'))
   @Patch(':id/icon')
-  upload(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
-    if (!file) {
-      throw new NotFoundException();
-    }
-
+  upload(
+    @Param('id') id: string,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: true }))
+    file: Express.Multer.File,
+  ) {
     return this.propertiesService.upload(id, file);
   }
 
@@ -61,7 +62,7 @@ export class PropertiesController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Delete(':id')
+  @Delete('batch')
   removeBatch(@Body() deletePropertyDto: DeletePropertyDto) {
     return this.propertiesService.removeBatch(deletePropertyDto);
   }

@@ -18,6 +18,7 @@ import { PostsModule } from './posts/posts.module';
 import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
 import { PropertiesModule } from './properties/properties.module';
 import { AmenitiesModule } from './amenities/amenities.module';
+import { AttributesModule } from './attributes/attributes.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { AmenitiesModule } from './amenities/amenities.module';
     PostsModule,
     PropertiesModule,
     AmenitiesModule,
+    AttributesModule,
   ],
   controllers: [AppController],
   providers: [
