@@ -112,6 +112,7 @@ export class PostsService {
         property: true,
         attrs: true,
         amenities: true,
+        savedBy: true,
       },
     });
   }

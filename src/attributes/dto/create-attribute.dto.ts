@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsJSON,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
@@ -46,6 +47,10 @@ export class CreateAttributeDto {
   @IsEnum(DataType)
   @IsNotEmpty()
   dataType: DataType;
+
+  @IsJSON()
+  @IsOptional()
+  dataValue?: any;
 
   @IsMongoId({ each: true })
   @IsArray()

@@ -42,6 +42,7 @@ model Attribute {
   icon        String?
   filterable  Boolean  @default(false) // thuộc tính có thể filter
   dataType    DataType // kiểu dữ liệu đầu vào
+  dataValue   Json? // dữ liệu tương ứng với kiểu (nếu có)
 
   // Loại bds chứa thuộc tính này
   properties  Property[] @relation(fields: [propertyIds], references: [id])

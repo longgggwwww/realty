@@ -1,6 +1,6 @@
 import { IsArray, IsMongoId, IsNotEmpty } from 'class-validator';
 
-export class DeleteAttributeDto {
+export class DeletePostDto {
   @IsMongoId({ each: true })
   @IsArray()
   @IsNotEmpty()

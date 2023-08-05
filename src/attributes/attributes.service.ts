@@ -20,6 +20,7 @@ export class AttributesService {
         description: createAttributeDto.description,
         icon: createAttributeDto.icon,
         dataType: createAttributeDto.dataType,
+        dataValue: createAttributeDto.dataValue,
         sym: createAttributeDto.sys,
         filterable: createAttributeDto.filterable,
         properties: {
@@ -64,6 +65,7 @@ export class AttributesService {
         description: updateAttributeDto.description,
         icon: updateAttributeDto.icon,
         dataType: updateAttributeDto.dataType,
+        dataValue: updateAttributeDto.dataValue,
         sym: updateAttributeDto.sys,
         filterable: updateAttributeDto.filterable,
         properties: updateAttributeDto.propertyIds

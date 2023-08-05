@@ -12,6 +12,8 @@ import {
   UseInterceptors,
   ParseFilePipe,
   BadRequestException,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -42,23 +44,19 @@ export class PropertiesController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(
-    FileInterceptor('icon', {
-      fileFilter(_req, file, callback) {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return callback(
-            new BadRequestException('Only image files are allowed!'),
-            false,
-          );
-        }
-        callback(null, true);
-      },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('icon'))
   @Patch(':id/icon')
   upload(
     @Param('id') id: string,
-    @UploadedFile(new ParseFilePipe({ fileIsRequired: true }))
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: true,
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10000 }),
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png)$/ }),
+        ],
+      }),
+    )
     file: Express.Multer.File,
   ) {
     return this.propertiesService.upload(id, file);

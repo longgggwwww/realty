@@ -11,13 +11,14 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseFilePipe,
-  BadRequestException,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AttributesService } from './attributes.service';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
 import { UpdateAttributeDto } from './dto/update-attribute.dto';
 import { DeleteAttributeDto } from './dto/delete-attribute.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('attributes')
 export class AttributesController {
@@ -42,23 +43,19 @@ export class AttributesController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(
-    FileInterceptor('icon', {
-      fileFilter(_req, file, callback) {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return callback(
-            new BadRequestException('Only image files are allowed!'),
-            false,
-          );
-        }
-        callback(null, true);
-      },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('icon'))
   @Patch(':id/icon')
   upload(
     @Param('id') id: string,
-    @UploadedFile(new ParseFilePipe({ fileIsRequired: true }))
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: true,
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10000 }),
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png)$/ }),
+        ],
+      }),
+    )
     file: Express.Multer.File,
   ) {
     return this.attributesService.upload(id, file);
