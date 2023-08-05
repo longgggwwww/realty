@@ -6,20 +6,20 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
+  Request,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { Request } from 'express';
+import { DeletePostDto } from './dto/delete-post.dto';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  create(@Body() createPostDto: CreatePostDto, @Req() req: any) {
-    return this.postsService.create(req.user?.id, createPostDto);
+  create(@Body() createPostDto: CreatePostDto, @Request() req) {
+    return this.postsService.create(req.user.id, createPostDto);
   }
 
   @Get()
@@ -34,11 +34,16 @@ export class PostsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+    return this.postsService.update(id, updatePostDto);
+  }
+
+  @Delete('batch')
+  removeBatch(@Body() deletePostDto: DeletePostDto) {
+    return this.postsService.removeBatch(deletePostDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+    return this.postsService.remove(id);
   }
 }

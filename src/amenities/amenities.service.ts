@@ -1,11 +1,12 @@
-import { Injectable, Ip } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateAmenityDto } from './dto/create-amenity.dto';
 import { UpdateAmenityDto } from './dto/update-amenity.dto';
-import { PrismaService } from 'nestjs-prisma';
 import { DeleteAmenityDto } from './dto/delete-amenity.dto';
 
 @Injectable()
 export class AmenitiesService {
+  cloudinaryService: any;
   constructor(private prismaService: PrismaService) {}
 
   async create(createAmenityDto: CreateAmenityDto) {
@@ -64,6 +65,23 @@ export class AmenitiesService {
       include: {
         posts: true,
         properties: true,
+      },
+    });
+  }
+
+  async upload(id: string, file: Express.Multer.File) {
+    const uploadedFile = await this.cloudinaryService.uploadIcon(file);
+    return await this.prismaService.property.update({
+      where: {
+        id,
+      },
+      data: {
+        icon: uploadedFile.secure_url,
+      },
+      include: {
+        attrs: true,
+        amenities: true,
+        posts: true,
       },
     });
   }

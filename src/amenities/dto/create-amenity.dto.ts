@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsMongoId,
@@ -9,6 +10,7 @@ import {
 } from 'class-validator';
 
 export class CreateAmenityDto {
+  @Transform(({ value }) => value.trim().toLowerCase())
   @Length(1, 225)
   @IsString()
   @IsNotEmpty()

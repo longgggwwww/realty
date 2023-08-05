@@ -38,7 +38,7 @@ model Attribute {
   key         String   @unique
   name        String
   description String?
-  sym         String
+  sym         String?
   icon        String?
   filterable  Boolean  @default(false) // thuộc tính có thể filter
   dataType    DataType // kiểu dữ liệu đầu vào

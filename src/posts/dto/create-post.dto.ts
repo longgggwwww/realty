@@ -1,45 +1,53 @@
+import { PostMode } from '@prisma/client';
 import {
   IsArray,
+  IsEnum,
   IsJSON,
   IsMongoId,
   IsNotEmpty,
+  IsNumberString,
   IsOptional,
   IsString,
+  IsUrl,
 } from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
+  @IsNotEmpty()
   title: string;
 
-  @IsString()
-  saleType: string;
+  @IsEnum(PostMode)
+  @IsNotEmpty()
+  mode: PostMode;
 
-  @IsString()
+  @IsNumberString()
+  @IsNotEmpty()
   price: string;
 
-  @IsString()
-  status: string;
-
-  @IsArray()
-  @IsMongoId({ each: true })
-  utilIds: string[];
-
-  @IsArray()
-  @IsMongoId({ each: true })
-  propertieIds: string[];
-
+  @IsUrl()
   @IsOptional()
-  address: any;
-
-  @IsOptional()
-  @IsString()
   thumbnail?: string;
 
-  @IsOptional()
   @IsString({ each: true })
-  images?: string[];
-
+  @IsArray()
   @IsNotEmpty()
+  images: string[];
+
   @IsMongoId()
-  estateTypeId: string;
+  @IsNotEmpty()
+  propertyId: string;
+
+  @IsMongoId({ each: true })
+  @IsArray()
+  @IsNotEmpty()
+  arrtIds: string[];
+
+  @IsMongoId({ each: true })
+  @IsArray()
+  @IsNotEmpty()
+  amenityIds: string[];
+
+  @IsJSON()
+  @IsNotEmpty()
+  address: string[];
 }

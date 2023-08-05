@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -12,11 +13,13 @@ import {
 import { DataType } from '../enum/data-type.enum';
 
 export class CreateAttributeDto {
+  @Transform(({ value }) => value.trim().toLowerCase())
   @Length(1, 225)
   @IsString()
   @IsNotEmpty()
   key: string;
 
+  @Transform(({ value }) => value.trim())
   @Length(1, 225)
   @IsString()
   @IsNotEmpty()
@@ -29,8 +32,8 @@ export class CreateAttributeDto {
 
   @Length(1, 16)
   @IsString()
-  @IsNotEmpty()
-  sys: string;
+  @IsOptional()
+  sys?: string;
 
   @IsUrl()
   @IsOptional()

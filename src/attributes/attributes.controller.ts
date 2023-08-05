@@ -10,8 +10,8 @@ import {
   HttpStatus,
   UseInterceptors,
   UploadedFile,
-  NotFoundException,
   ParseFilePipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { AttributesService } from './attributes.service';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
@@ -42,7 +42,19 @@ export class AttributesController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(FileInterceptor('icon'))
+  @UseInterceptors(
+    FileInterceptor('icon', {
+      fileFilter(_req, file, callback) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+          return callback(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+    }),
+  )
   @Patch(':id/icon')
   upload(
     @Param('id') id: string,

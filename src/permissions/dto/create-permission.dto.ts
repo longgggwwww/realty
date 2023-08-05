@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsMongoId,
   IsNotEmpty,
@@ -7,6 +8,7 @@ import {
 } from 'class-validator';
 
 export class CreatePermissionDto {
+  @Transform(({ value }) => value.trim().toUpperCase())
   @Length(1, 255)
   @IsString()
   @IsNotEmpty()
