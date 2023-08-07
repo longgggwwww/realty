@@ -4,6 +4,8 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostStatus } from './enum/status-post.enum';
 import { DeletePostDto } from './dto/delete-post.dto';
+import { ChangePostStatusDto } from './dto/change-post-status.dto';
+import { TogglePostDto } from './dto/toggle-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -27,12 +29,16 @@ export class PostsService {
             id: createPostDto.propertyId,
           },
         },
-        attrs: {
-          connect: createPostDto.arrtIds.map((id) => ({ id })),
-        },
-        amenities: {
-          connect: createPostDto.amenityIds.map((id) => ({ id })),
-        },
+        attrs: createPostDto.attrIds
+          ? {
+              connect: createPostDto.attrIds.map((id) => ({ id })),
+            }
+          : undefined,
+        amenities: createPostDto.amenityIds
+          ? {
+              connect: createPostDto.amenityIds.map((id) => ({ id })),
+            }
+          : undefined,
         status: PostStatus.pending,
         address: createPostDto.address,
       },
@@ -95,9 +101,9 @@ export class PostsService {
               },
             }
           : undefined,
-        attrs: updatePostDto.arrtIds
+        attrs: updatePostDto.attrIds
           ? {
-              connect: updatePostDto.arrtIds.map((id) => ({ id })),
+              connect: updatePostDto.attrIds.map((id) => ({ id })),
             }
           : undefined,
         amenities: updatePostDto.amenityIds
@@ -131,6 +137,56 @@ export class PostsService {
         id: {
           in: deletePostDto.ids,
         },
+      },
+    });
+  }
+
+  async findMyPosts(userId: string) {
+    return await this.prismaService.post.findMany({
+      where: {
+        authorId: userId,
+      },
+      include: {
+        property: true,
+        attrs: true,
+        amenities: true,
+        savedBy: true,
+      },
+    });
+  }
+
+  async changePostStatus(id: string, changePostStatusDto: ChangePostStatusDto) {
+    return await this.prismaService.post.update({
+      where: {
+        id,
+      },
+      data: {
+        status: changePostStatusDto.status,
+      },
+      include: {
+        author: true,
+        property: true,
+        attrs: true,
+        amenities: true,
+        savedBy: true,
+      },
+    });
+  }
+
+  async tooglePost(id: string, tooglePostDto: TogglePostDto) {
+    return await this.prismaService.post.update({
+      where: {
+        id,
+      },
+      data: {
+        visible: tooglePostDto.visible,
+      },
+      include: {
+        author: true,
+        property: true,
+        attrs: true,
+        amenities: true,
+        savedBy: true,
       },
     });
   }

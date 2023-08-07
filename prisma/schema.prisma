@@ -99,9 +99,12 @@ model Post {
   price     String
   thumbnail String?
   images    String[]
-  status    PostStatus // trạng thái bài đăng: hiển thị, chờ duyệt, đã duyệt, bị từ chối, ...
-  views     BigInt?    @default(0)
-  address   Json
+  status    PostStatus // trạng thái bài đăng: chờ duyệt, đã duyệt, bị từ chối, ...
+  visible   Boolean    @default(true) // hiển thị, ẩn
+  deleted   Boolean    @default(false) // đã xóa
+  completed Boolean    @default(false) // đã cho thuê/bán
+  views     Int?       @default(0)
+  address   Json?
 
   // Loại hình bds
   property   Property @relation(fields: [propertyId], references: [id])
@@ -259,5 +262,17 @@ model Config {
   roleDef Role   @relation(fields: [roleId], references: [id])
   roleId  String @db.ObjectId
 
+  carousel Carousel
+
   @@map("config") // config hệ thống
+}
+
+type Carousel {
+  slides Slide[]
+}
+
+type Slide {
+  image   String
+  appPaht String
+  index   Int
 }

@@ -30,8 +30,8 @@ export class CreatePostDto {
 
   @IsString({ each: true })
   @IsArray()
-  @IsNotEmpty()
-  images: string[];
+  @IsOptional()
+  images?: string[];
 
   @IsMongoId()
   @IsNotEmpty()
@@ -40,14 +40,14 @@ export class CreatePostDto {
   @IsMongoId({ each: true })
   @IsArray()
   @IsNotEmpty()
-  arrtIds: string[];
+  attrIds: string[];
 
   @IsMongoId({ each: true })
   @IsArray()
-  @IsNotEmpty()
-  amenityIds: string[];
+  @IsOptional()
+  amenityIds?: string[];
 
   @IsJSON()
   @IsNotEmpty()
-  address: string[];
+  address: string;
 }
