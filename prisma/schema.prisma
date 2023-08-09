@@ -100,9 +100,6 @@ model Post {
   thumbnail String?
   images    String[]
   status    PostStatus // trạng thái bài đăng: chờ duyệt, đã duyệt, bị từ chối, ...
-  visible   Boolean    @default(true) // hiển thị, ẩn
-  deleted   Boolean    @default(false) // đã xóa
-  completed Boolean    @default(false) // đã cho thuê/bán
   views     Int?       @default(0)
   address   Json?
 
@@ -138,11 +135,11 @@ enum PostMode {
 }
 
 enum PostStatus {
-  display
+  displayed
+  deleted
   pending
-  accept
-  reject
-  removed
+  accepted
+  rejected
 }
 
 model User {

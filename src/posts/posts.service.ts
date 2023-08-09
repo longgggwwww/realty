@@ -5,7 +5,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostStatus } from './enum/status-post.enum';
 import { DeletePostDto } from './dto/delete-post.dto';
 import { ChangePostStatusDto } from './dto/change-post-status.dto';
-import { TogglePostDto } from './dto/toggle-post.dto';
+import { QueryPaginationDto } from './dto/query-pagination.dto';
 
 @Injectable()
 export class PostsService {
@@ -51,8 +51,18 @@ export class PostsService {
     });
   }
 
-  async findAll() {
+  async findAll(queryPaginationDto: Partial<QueryPaginationDto>) {
     return await this.prismaService.post.findMany({
+      skip: 1,
+      cursor: queryPaginationDto.cursor
+        ? {
+            id: queryPaginationDto.cursor,
+          }
+        : undefined,
+      take: queryPaginationDto.take,
+      orderBy: {
+        id: 'asc',
+      },
       include: {
         author: true,
         property: true,
@@ -162,24 +172,6 @@ export class PostsService {
       },
       data: {
         status: changePostStatusDto.status,
-      },
-      include: {
-        author: true,
-        property: true,
-        attrs: true,
-        amenities: true,
-        savedBy: true,
-      },
-    });
-  }
-
-  async tooglePost(id: string, tooglePostDto: TogglePostDto) {
-    return await this.prismaService.post.update({
-      where: {
-        id,
-      },
-      data: {
-        visible: tooglePostDto.visible,
       },
       include: {
         author: true,

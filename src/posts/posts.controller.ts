@@ -7,25 +7,30 @@ import {
   Param,
   Delete,
   Request,
+  HttpCode,
+  HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { DeletePostDto } from './dto/delete-post.dto';
 import { ChangePostStatusDto } from './dto/change-post-status.dto';
-import { TogglePostDto } from './dto/toggle-post.dto';
+import { QueryPaginationDto } from './dto/query-pagination.dto';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   // Bài đăng của tôi
+  @HttpCode(HttpStatus.OK)
   @Get('my-posts')
   findMyPosts(@Request() req) {
     return this.postsService.findMyPosts(req.user.id);
   }
 
   // Duyệt bài đăng (cho quản trị viên)
+  @HttpCode(HttpStatus.OK)
   @Patch(':id/status')
   changeStatus(
     @Param('id') id: string,
@@ -34,37 +39,38 @@ export class PostsController {
     return this.postsService.changePostStatus(id, changePostStatusDto);
   }
 
-  // Ẩn, hiện bài đăng
-  @Patch(':id/toggle')
-  toggle(@Param('id') id: string, @Body() togglePostDto: TogglePostDto) {
-    return this.postsService.tooglePost(id, togglePostDto);
-  }
-
+  @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createPostDto: CreatePostDto, @Request() req) {
     return this.postsService.create(req.user.id, createPostDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Query() queryPaginationDto: QueryPaginationDto) {
+    console.log('debug:', queryPaginationDto);
+    return this.postsService.findAll(queryPaginationDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postsService.update(id, updatePostDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Delete('batch')
   removeBatch(@Body() deletePostDto: DeletePostDto) {
     return this.postsService.removeBatch(deletePostDto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.postsService.remove(id);
