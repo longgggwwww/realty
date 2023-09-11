@@ -42,29 +42,29 @@ import { MulterModule } from '@nestjs/platform-express';
         };
       },
     }),
-    MulterModule.registerAsync({
-      useFactory(...args) {
-        return {
-          limits: {
-            fileSize: parseInt(process.env.MAX_SIZE_PER_FILE_UPLOAD),
-            files: parseInt(process.env.MAX_NUMBER_FILE_UPLOAD),
-          },
-        };
-      },
-    }),
+    // MulterModule.registerAsync({
+    //   useFactory(...args) {
+    //     return {
+    //       limits: {
+    //         fileSize: parseInt(process.env.MAX_SIZE_PER_FILE_UPLOAD),
+    //         files: parseInt(process.env.MAX_NUMBER_FILE_UPLOAD),
+    //       },
+    //     };
+    //   },
+    // }),
     AuthModule,
-    UsersModule,
-    RolesModule,
-    PermissionsModule,
-    EventsModule,
-    FirebaseModule,
-    GgdriveModule,
-    CloudinaryModule,
-    PermissionGroupsModule,
+    // UsersModule,
+    // RolesModule,
+    // PermissionsModule,
+    // EventsModule,
+    // FirebaseModule,
+    // GgdriveModule,
+    // CloudinaryModule,
+    // PermissionGroupsModule,
     PostsModule,
-    PropertiesModule,
-    AmenitiesModule,
-    AttributesModule,
+    // PropertiesModule,
+    // AmenitiesModule,
+    // AttributesModule,
   ],
   controllers: [AppController],
   providers: [

@@ -16,7 +16,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { DeletePostDto } from './dto/delete-post.dto';
 import { ChangePostStatusDto } from './dto/change-post-status.dto';
-import { QueryPaginationDto } from './dto/query-pagination.dto';
+import { QueryDto } from './dto/query.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -47,8 +47,7 @@ export class PostsController {
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  findAll(@Query() queryPaginationDto: QueryPaginationDto) {
-    console.log('debug:', queryPaginationDto);
+  findAll(@Query() queryPaginationDto: QueryDto) {
     return this.postsService.findAll(queryPaginationDto);
   }
 

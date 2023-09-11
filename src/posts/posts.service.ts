@@ -5,7 +5,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostStatus } from './enum/status-post.enum';
 import { DeletePostDto } from './dto/delete-post.dto';
 import { ChangePostStatusDto } from './dto/change-post-status.dto';
-import { QueryPaginationDto } from './dto/query-pagination.dto';
+import { QueryDto } from './dto/query.dto';
 
 @Injectable()
 export class PostsService {
@@ -51,8 +51,31 @@ export class PostsService {
     });
   }
 
-  async findAll(queryPaginationDto: Partial<QueryPaginationDto>) {
+  async findAll(queryPaginationDto: QueryDto) {
+    console.log(queryPaginationDto);
     return await this.prismaService.post.findMany({
+      where: {
+        title: queryPaginationDto.title
+          ? {
+              contains: queryPaginationDto.title,
+              mode: 'insensitive',
+            }
+          : undefined,
+        property: queryPaginationDto.propertyId
+          ? {
+              id: queryPaginationDto.propertyId,
+            }
+          : undefined,
+        amenities: queryPaginationDto.amenityIds
+          ? {
+              some: {
+                id: {
+                  in: queryPaginationDto.amenityIds,
+                },
+              },
+            }
+          : undefined,
+      },
       skip: 1,
       cursor: queryPaginationDto.cursor
         ? {
