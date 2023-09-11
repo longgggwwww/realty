@@ -62,9 +62,9 @@ import { MulterModule } from '@nestjs/platform-express';
     // CloudinaryModule,
     // PermissionGroupsModule,
     PostsModule,
-    // PropertiesModule,
-    // AmenitiesModule,
-    // AttributesModule,
+    PropertiesModule,
+    AmenitiesModule,
+    AttributesModule,
   ],
   controllers: [AppController],
   providers: [

@@ -60,15 +60,15 @@ model Attribute {
 }
 
 enum DataType {
-  MONEY
-  TEXT
-  NUMBER
-  SELECT
-  RADIO
-  CHECKBOX
-  AREA
-  SIZE
-  BOOL
+  money
+  text
+  number
+  select
+  radio
+  checkbox
+  area
+  size
+  bool
 }
 
 model Amenity {
@@ -95,14 +95,18 @@ model Amenity {
 model Post {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  title     String
-  mode      PostMode // chế độ bài đăng: bán, cho thuê, ...
-  price     String
-  thumbnail String?
-  images    String[]
-  status    PostStatus // trạng thái bài đăng: chờ duyệt, đã duyệt, bị từ chối, ...
-  views     Int?       @default(0)
-  address   Json?
+  title          String
+  mode           PostMode // chế độ bài đăng: bán, cho thuê, ...
+  price          Int
+  thumbnail      String?
+  images         String[]
+  status         PostStatus // trạng thái bài đăng: chờ duyệt, đã duyệt, bị từ chối, ...
+  views          Int?       @default(0)
+  address        Address
+  area           Int? //  Đơn vị m2
+  depositCharge  Int? //  Tiền cọc
+  electricityFee Int? //  Tiền điện
+  waterFee       Int? //  Tiền nước
 
   // Loại hình bds
   property   Property @relation(fields: [propertyId], references: [id])
@@ -191,9 +195,10 @@ enum Providers {
 }
 
 type Address {
-  province String
-  district String
-  ward     String
+  detail     String
+  provinceId String
+  districtId String
+  wardId     String
 }
 
 model Account {

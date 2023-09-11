@@ -1,15 +1,36 @@
 import { PostMode } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
-  IsJSON,
   IsMongoId,
   IsNotEmpty,
-  IsNumberString,
+  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
+  Max,
+  Min,
+  ValidateNested,
 } from 'class-validator';
+
+class Address {
+  @IsString()
+  @IsNotEmpty()
+  detail: string;
+
+  @IsString()
+  @IsNotEmpty()
+  provinceId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  districtId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  wardId: string;
+}
 
 export class CreatePostDto {
   @IsString()
@@ -20,9 +41,11 @@ export class CreatePostDto {
   @IsNotEmpty()
   mode: PostMode;
 
-  @IsNumberString()
+  @Min(1e5)
+  @Max(1.5e7)
+  @IsNumber()
   @IsNotEmpty()
-  price: string;
+  price: number;
 
   @IsUrl()
   @IsOptional()
@@ -47,7 +70,28 @@ export class CreatePostDto {
   @IsOptional()
   amenityIds?: string[];
 
-  @IsJSON()
+  @ValidateNested()
+  @Type(() => Address)
   @IsNotEmpty()
-  address: string;
+  address: Address;
+
+  @Min(0)
+  @IsNumber()
+  @IsOptional()
+  area?: number; // m2
+
+  @Min(0)
+  @IsNumber()
+  @IsOptional()
+  depositCharge?: number; //  Tiền cọc
+
+  @Min(0)
+  @IsNumber()
+  @IsOptional()
+  electricityFee?: number; //  Tiền điện
+
+  @Min(0)
+  @IsNumber()
+  @IsOptional()
+  waterFee?: number; //  Tiền nước
 }

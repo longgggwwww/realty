@@ -25,23 +25,25 @@ export class QueryDto extends PartialType(QueryPaginationDto) {
   @IsString()
   title?: string;
 
-  @IsOptional()
-  @IsMongoId()
-  propertyId?: string;
-
-  @IsOptional()
   @IsMongoId({ each: true })
+  @IsOptional()
+  propertyIds: string[];
+
+  @IsMongoId({ each: true })
+  @IsOptional()
   amenityIds: string[];
 
-  @IsOptional()
+  @Type(() => Number)
   @IsInt()
-  @Min(0)
-  @Max(1.5e6)
-  minPrice: number;
+  @Min(1e4)
+  @Max(1.5e7)
+  @IsOptional()
+  minPrice?: number = 1e5;
 
-  @IsOptional()
+  @Type(() => Number)
   @IsInt()
-  @Min(0)
-  @Max(1.5e6)
-  maxPrice: number;
+  @Min(1e4)
+  @Max(1.5e7)
+  @IsOptional()
+  maxPrice?: number = 1.5e7;
 }

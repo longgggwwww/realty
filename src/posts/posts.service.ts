@@ -40,7 +40,16 @@ export class PostsService {
             }
           : undefined,
         status: PostStatus.pending,
-        address: createPostDto.address,
+        address: {
+          detail: createPostDto.address.detail,
+          provinceId: createPostDto.address.provinceId,
+          districtId: createPostDto.address.districtId,
+          wardId: createPostDto.address.wardId,
+        },
+        area: createPostDto.area,
+        depositCharge: createPostDto.depositCharge,
+        electricityFee: createPostDto.electricityFee,
+        waterFee: createPostDto.waterFee,
       },
       include: {
         author: true,
@@ -51,38 +60,43 @@ export class PostsService {
     });
   }
 
-  async findAll(queryPaginationDto: QueryDto) {
-    console.log(queryPaginationDto);
+  async findAll(queryDto: QueryDto) {
     return await this.prismaService.post.findMany({
       where: {
-        title: queryPaginationDto.title
+        title: queryDto.title
           ? {
-              contains: queryPaginationDto.title,
+              contains: queryDto.title,
               mode: 'insensitive',
             }
           : undefined,
-        property: queryPaginationDto.propertyId
+        property: queryDto.propertyIds
           ? {
-              id: queryPaginationDto.propertyId,
+              id: {
+                in: queryDto.propertyIds,
+              },
             }
           : undefined,
-        amenities: queryPaginationDto.amenityIds
+        amenities: queryDto.amenityIds
           ? {
               some: {
                 id: {
-                  in: queryPaginationDto.amenityIds,
+                  in: queryDto.amenityIds,
                 },
               },
             }
           : undefined,
+        price: {
+          gte: queryDto.minPrice,
+          lte: queryDto.maxPrice,
+        },
       },
-      skip: 1,
-      cursor: queryPaginationDto.cursor
+      skip: queryDto.cursor ? 1 : undefined,
+      cursor: queryDto.cursor
         ? {
-            id: queryPaginationDto.cursor,
+            id: queryDto.cursor,
           }
         : undefined,
-      take: queryPaginationDto.take,
+      take: queryDto.take,
       orderBy: {
         id: 'asc',
       },

@@ -47,8 +47,8 @@ export class PostsController {
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  findAll(@Query() queryPaginationDto: QueryDto) {
-    return this.postsService.findAll(queryPaginationDto);
+  findAll(@Query() queryDto: QueryDto) {
+    return this.postsService.findAll(queryDto);
   }
 
   @HttpCode(HttpStatus.OK)
