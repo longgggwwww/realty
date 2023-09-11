@@ -46,4 +46,16 @@ export class QueryDto extends PartialType(QueryPaginationDto) {
   @Max(1.5e7)
   @IsOptional()
   maxPrice?: number = 1.5e7;
+
+  @IsString()
+  @IsOptional()
+  provinceId?: string;
+
+  @IsString()
+  @IsOptional()
+  districtId?: string;
+
+  @IsString()
+  @IsOptional()
+  wardId?: string;
 }
