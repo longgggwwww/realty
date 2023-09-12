@@ -1,2 +1,0 @@
-GET {{host}}/api/permission-groups
-Authorization: Bearer {{access_token}}

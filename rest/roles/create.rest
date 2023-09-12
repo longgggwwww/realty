@@ -1,7 +1,0 @@
-POST {{host}}/api/roles
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-
-{
-  "name": "TEST_PERMISSION"
-}

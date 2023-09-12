@@ -1,2 +1,0 @@
-GET {{host}}/api/properties/64cc68949ef57e02dd3c6fcb
-Authorization: Bearer {{access_token}}

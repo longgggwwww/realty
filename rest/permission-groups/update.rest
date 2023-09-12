@@ -1,7 +1,0 @@
-PATCH  {{host}}/api/permission-groups/64c9f59f998a87784755ab89
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-
-{
-  "name": "vlxxx"
-}

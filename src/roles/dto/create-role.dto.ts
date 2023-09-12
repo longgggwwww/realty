@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsInt,
   IsMongoId,
   IsNotEmpty,
@@ -25,6 +26,7 @@ export class CreateRoleDto {
   description?: string;
 
   @IsMongoId({ each: true })
+  @IsArray()
   @IsNotEmpty()
   permissionIds: string[];
 }

@@ -17,10 +17,6 @@ model Property {
   description String?
   icon        String?
 
-  // Thuộc tính
-  attrs   Attribute[] @relation(fields: [attrIds], references: [id])
-  attrIds String[]    @db.ObjectId
-
   // Tiện ích
   amenities  Amenity[] @relation(fields: [amenityIds], references: [id])
   amenityIds String[]  @db.ObjectId
@@ -34,43 +30,6 @@ model Property {
   @@map("properties") // loại bds
 }
 
-model Attribute {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  key         String   @unique
-  name        String
-  description String?
-  sym         String?
-  icon        String?
-  filterable  Boolean  @default(false) // thuộc tính có thể filter
-  dataType    DataType // kiểu dữ liệu đầu vào
-  dataValue   Json? // dữ liệu tương ứng với kiểu (nếu có)
-
-  // Loại bds chứa thuộc tính này
-  properties  Property[] @relation(fields: [propertyIds], references: [id])
-  propertyIds String[]   @db.ObjectId
-
-  // Bài đăng chứa thuộc tính này
-  posts   Post[]   @relation(fields: [postIds], references: [id])
-  postIds String[] @db.ObjectId
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("attributes") // thuộc tính của bds
-}
-
-enum DataType {
-  money
-  text
-  number
-  select
-  radio
-  checkbox
-  area
-  size
-  bool
-}
-
 model Amenity {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   key         String
@@ -78,43 +37,33 @@ model Amenity {
   description String?
   icon        String?
 
-  // Loại bds chứa tiện ích này
+  // Bds chứa tiện ích
   properties  Property[] @relation(fields: [propertyIds], references: [id])
   propertyIds String[]   @db.ObjectId
 
-  // Bài đăng chứa tiện ích này
+  // Bài đăng chứa tiện ích
   posts   Post[]   @relation(fields: [postIds], references: [id])
   postIds String[] @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("amenities") // tiện ích của bds
+  @@map("amenities") // tiện ích
 }
 
 model Post {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  title          String
-  mode           PostMode // chế độ bài đăng: bán, cho thuê, ...
-  price          Int
-  thumbnail      String?
-  images         String[]
-  status         PostStatus // trạng thái bài đăng: chờ duyệt, đã duyệt, bị từ chối, ...
-  views          Int?       @default(0)
-  address        Address
-  area           Int? //  Đơn vị m2
-  depositCharge  Int? //  Tiền cọc
-  electricityFee Int? //  Tiền điện
-  waterFee       Int? //  Tiền nước
-
-  // Loại hình bds
-  property   Property @relation(fields: [propertyId], references: [id])
-  propertyId String   @db.ObjectId
-
-  // Thuộc tính
-  attrs   Attribute[] @relation(fields: [attrIds], references: [id])
-  attrIds String[]    @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  property    Property   @relation(fields: [propertyId], references: [id])
+  propertyId  String     @db.ObjectId
+  price       Int
+  area        Float
+  thumb       String
+  images      String[]
+  status      PostStatus
+  address     Address
+  views       Int        @default(0)
 
   // Tiện ích
   amenities  Amenity[] @relation(fields: [amenityIds], references: [id])
@@ -134,17 +83,11 @@ model Post {
   @@map("posts")
 }
 
-enum PostMode {
-  sale // bán
-  lease // cho thuê
-}
-
 enum PostStatus {
-  displayed
-  deleted
   pending
-  accepted
-  rejected
+  published
+  sold // đã bán
+  archived // đã lưu trữ
 }
 
 model User {
@@ -196,6 +139,9 @@ enum Providers {
 
 type Address {
   detail     String
+  body       Json?
+  lng        String
+  lat        String
   provinceId String
   districtId String
   wardId     String
@@ -210,11 +156,10 @@ model Account {
 }
 
 model Role {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  level       Int
-  description String?
-
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  level         Int
+  description   String?
   permissions   Permission[] @relation(fields: [permissionIds], references: [id])
   permissionIds String[]     @db.ObjectId
 
@@ -230,21 +175,15 @@ model Role {
 }
 
 model Permission {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  code        String  @unique
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  code        String    @unique
   description String?
-
-  // Thuộc group nào
-  group   PermGroup @relation(fields: [groupId], references: [id])
-  groupId String    @db.ObjectId
-
-  // Hiện tại, role nào đang chứa permission này
-  roles   Role[]   @relation(fields: [roleIds], references: [id])
-  roleIds String[] @db.ObjectId
-
-  // Hiện tại, user nào dùng permission này làm permission đặc biệt
-  users   User[]   @relation(fields: [userIds], references: [id])
-  userIds String[] @db.ObjectId
+  group       PermGroup @relation(fields: [groupId], references: [id])
+  groupId     String    @db.ObjectId
+  roles       Role[]    @relation(fields: [roleIds], references: [id])
+  roleIds     String[]  @db.ObjectId
+  users       User[]    @relation(fields: [userIds], references: [id])
+  userIds     String[]  @db.ObjectId
 
   @@map("permissions") // quyền hạn
 }
@@ -255,7 +194,7 @@ model PermGroup {
   description String?
   permissions Permission[]
 
-  @@map("permission-groups") // nhóm quyền (gom nhóm các quyền hạn có chức năng tương tự)
+  @@map("permission-groups") // nhóm quyền
 }
 
 model Config {

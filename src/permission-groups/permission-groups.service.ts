@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { CreatePermissionGroupDto } from './dto/create-permission-group.dto';
-import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
 import { DeletePermissionGroupDto } from './dto/delete-permission-group.dto';
+import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
 
 @Injectable()
 export class PermissionGroupsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createPermissionGroupDto: CreatePermissionGroupDto) {
     return await this.prismaService.permGroup.create({
@@ -26,7 +26,7 @@ export class PermissionGroupsService {
   }
 
   async findOne(id: string) {
-    return await this.prismaService.permGroup.findUnique({
+    return await this.prismaService.permGroup.findUniqueOrThrow({
       where: {
         id,
       },

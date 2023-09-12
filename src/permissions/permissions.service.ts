@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { DeletePermissionDto } from './dto/delete-permission.dto';
@@ -6,7 +6,7 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 
 @Injectable()
 export class PermissionsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createPermissionDto: CreatePermissionDto) {
     return await this.prismaService.permission.create({
@@ -38,16 +38,11 @@ export class PermissionsService {
   }
 
   async findOne(id: string) {
-    const permission = await this.prismaService.permission.findUnique({
+    return await this.prismaService.permission.findUniqueOrThrow({
       where: {
         id,
       },
     });
-    if (!permission) {
-      throw new NotFoundException();
-    }
-
-    return permission;
   }
 
   async update(id: string, updatePermissionDto: UpdatePermissionDto) {

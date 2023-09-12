@@ -1,9 +1,0 @@
-DELETE {{host}}/api/permission-groups/batch
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-
-{
-  "ids": [
-    "64c9fe35d80b1f848e992e19"
-  ]
-}

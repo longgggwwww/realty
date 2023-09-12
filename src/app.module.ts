@@ -1,70 +1,74 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
+import { MulterModule } from '@nestjs/platform-express';
+import configuration from 'config/configuration';
+import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
+import { AmenitiesModule } from './amenities/amenities.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.guard';
-import { PermissionsGuard } from './auth/permission.guard';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { RolesModule } from './roles/roles.module';
-import { PermissionsModule } from './permissions/permissions.module';
-import { EventsModule } from './events/events.module';
-import { FirebaseModule } from './firebase/firebase.module';
-import { GgdriveModule } from './ggdrive/ggdrive.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { PermissionsGuard } from './auth/permission.guard';
 import { PermissionGroupsModule } from './permission-groups/permission-groups.module';
-import { PostsModule } from './posts/posts.module';
-import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
+import { PermissionsModule } from './permissions/permissions.module';
 import { PropertiesModule } from './properties/properties.module';
-import { AmenitiesModule } from './amenities/amenities.module';
-import { AttributesModule } from './attributes/attributes.module';
-import { MulterModule } from '@nestjs/platform-express';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
-    PrismaModule.forRootAsync({
+    ConfigModule.forRoot({
       isGlobal: true,
-      useFactory(...args) {
-        return {
-          middlewares: [loggingMiddleware()],
-        };
-      },
+      load: [configuration],
     }),
     JwtModule.registerAsync({
       global: true,
-      useFactory(...args) {
+      useFactory(configService: ConfigService) {
         return {
-          secret: process.env.ACCESS_TOKEN_SECRET,
+          secret: configService.get('jwt.access_token.secret'),
           signOptions: {
-            expiresIn: '60d',
+            expiresIn: configService.get('jwt.access_token.expired_in'),
           },
         };
       },
+      inject: [ConfigService],
     }),
-    // MulterModule.registerAsync({
-    //   useFactory(...args) {
-    //     return {
-    //       limits: {
-    //         fileSize: parseInt(process.env.MAX_SIZE_PER_FILE_UPLOAD),
-    //         files: parseInt(process.env.MAX_NUMBER_FILE_UPLOAD),
-    //       },
-    //     };
-    //   },
-    // }),
+    PrismaModule.forRootAsync({
+      isGlobal: true,
+      useFactory(configService: ConfigService) {
+        return {
+          prismaOptions: {
+            datasourceUrl: configService.get('db.mongo.url'),
+          },
+          middlewares: [loggingMiddleware()],
+        };
+      },
+      inject: [ConfigService],
+    }),
+    MulterModule.registerAsync({
+      useFactory(configService: ConfigService) {
+        return {
+          limits: {
+            fieldSize: configService.get('upload.max_number_file_size'),
+            files: configService.get('upload.max_number_file_upload'),
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
     AuthModule,
+    PermissionGroupsModule,
+    PermissionsModule,
+    RolesModule,
+    PropertiesModule,
+    AmenitiesModule,
     // UsersModule,
-    // RolesModule,
-    // PermissionsModule,
     // EventsModule,
     // FirebaseModule,
     // GgdriveModule,
     // CloudinaryModule,
-    // PermissionGroupsModule,
-    PostsModule,
-    PropertiesModule,
-    AmenitiesModule,
-    AttributesModule,
+    // PostsModule,
   ],
   controllers: [AppController],
   providers: [

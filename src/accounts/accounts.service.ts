@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
 import { UserRecord } from 'firebase-admin/lib/auth/user-record';
+import { PrismaService } from 'nestjs-prisma';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AccountsService {
   constructor(
-    private prismaService: PrismaService,
-    private user: UsersService,
+    private readonly prismaService: PrismaService,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(record: UserRecord) {
-    const user = await this.user.create({
+    const user = await this.usersService.create({
       profile: {
         name: record.displayName,
         phone: record.phoneNumber,
@@ -42,7 +42,7 @@ export class AccountsService {
   }
 
   async findByUID(uid: string) {
-    return await this.prismaService.account.findFirst({
+    return await this.prismaService.account.findUnique({
       where: {
         uid,
       },

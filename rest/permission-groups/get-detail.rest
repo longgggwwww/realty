@@ -1,2 +1,0 @@
-GET {{host}}/api/permission-groupsd/64c9f59f998a87784755ab89
-Authorization: Bearer {{access_token}}

@@ -11,6 +11,8 @@ import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { DeleteRoleDto } from './dto/delete-role.dto';
+import { ConfigService } from '@nestjs/config';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('roles')
 export class RolesController {
@@ -21,6 +23,7 @@ export class RolesController {
     return this.rolesService.create(createRoleDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.rolesService.findAll();

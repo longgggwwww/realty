@@ -4,9 +4,9 @@ import { JwtPayload } from './entities/jwt-payload.entity';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwt: JwtService) {}
+  constructor(private readonly jwtService: JwtService) {}
 
   generateToken(payload: JwtPayload) {
-    return this.jwt.sign(payload);
+    return this.jwtService.sign(payload);
   }
 }

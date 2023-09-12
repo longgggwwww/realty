@@ -1,28 +1,14 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UnauthorizedException,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AccountsService } from 'src/accounts/accounts.service';
-import { FirebaseService } from 'src/firebase/firebase.service';
 import { Public } from './decorators/public.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly auth: AuthService,
-    private readonly account: AccountsService,
-    private readonly firebase: FirebaseService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     // try {
@@ -45,9 +31,8 @@ export class AuthController {
   }
 
   @Public()
-  @HttpCode(HttpStatus.OK)
   @Post('/refresh-token')
   refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.auth.generateToken({ id: refreshTokenDto.token });
+    return this.authService.generateToken({ id: refreshTokenDto.token });
   }
 }

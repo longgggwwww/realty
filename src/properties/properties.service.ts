@@ -1,15 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
-import { CreatePropertyDto } from './dto/create-property.dto';
-import { UpdatePropertyDto } from './dto/update-property.dto';
-import { DeletePropertyDto } from './dto/delete-property.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CreatePropertyDto } from './dto/create-property.dto';
+import { DeletePropertyDto } from './dto/delete-property.dto';
+import { UpdatePropertyDto } from './dto/update-property.dto';
 
 @Injectable()
 export class PropertiesService {
   constructor(
-    private prismaService: PrismaService,
-    private cloudinaryService: CloudinaryService,
+    private readonly prismaService: PrismaService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(createPropertyDto: CreatePropertyDto) {
@@ -25,7 +25,6 @@ export class PropertiesService {
   async findAll() {
     return await this.prismaService.property.findMany({
       include: {
-        attrs: true,
         amenities: true,
         posts: true,
       },
@@ -33,21 +32,15 @@ export class PropertiesService {
   }
 
   async findOne(id: string) {
-    const property = await this.prismaService.property.findUnique({
+    return await this.prismaService.property.findUniqueOrThrow({
       where: {
         id,
       },
       include: {
-        attrs: true,
         amenities: true,
         posts: true,
       },
     });
-    if (!property) {
-      throw new NotFoundException();
-    }
-
-    return property;
   }
 
   async update(id: string, updatePropertyDto: UpdatePropertyDto) {
@@ -61,7 +54,6 @@ export class PropertiesService {
         icon: updatePropertyDto.icon,
       },
       include: {
-        attrs: true,
         amenities: true,
         posts: true,
       },
@@ -70,6 +62,7 @@ export class PropertiesService {
 
   async upload(id: string, file: Express.Multer.File) {
     const uploadedFile = await this.cloudinaryService.uploadIcon(file);
+
     return await this.prismaService.property.update({
       where: {
         id,
@@ -78,7 +71,6 @@ export class PropertiesService {
         icon: uploadedFile.secure_url,
       },
       include: {
-        attrs: true,
         amenities: true,
         posts: true,
       },

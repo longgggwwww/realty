@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { DeleteRoleDto } from './dto/delete-role.dto';
@@ -6,7 +6,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Injectable()
 export class RolesService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createRoleDto: CreateRoleDto) {
     return await this.prismaService.role.create({
@@ -35,7 +35,7 @@ export class RolesService {
   }
 
   async findOne(id: string) {
-    const role = await this.prismaService.role.findUnique({
+    return await this.prismaService.role.findUniqueOrThrow({
       where: {
         id,
       },
@@ -44,11 +44,6 @@ export class RolesService {
         users: true,
       },
     });
-    if (!role) {
-      throw new NotFoundException();
-    }
-
-    return role;
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {

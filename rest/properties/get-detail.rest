@@ -1,2 +1,0 @@
-GET {{host}}/api/properties/
-Authorization: Bearer {{access_token}}

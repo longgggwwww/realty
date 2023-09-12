@@ -1,10 +1,10 @@
-// cloudinary.provider.ts
-
 import { v2 as cloudinary } from 'cloudinary';
+import { ConfigService } from '@nestjs/config';
 
 export const CloudinaryProvider = {
   provide: 'CLOUDINARY',
-  useFactory: () => {
-    return cloudinary.url(process.env.CLOUDINARY_URL);
+  useFactory(configService: ConfigService) {
+    return cloudinary.url(configService.get('cloud.cloudinary.url'));
   },
+  inject: [ConfigService],
 };
