@@ -1,11 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
+import { ChangePostStatusDto } from './dto/change-status.dto';
 import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { PostStatus } from './enum/status-post.enum';
 import { DeletePostDto } from './dto/delete-post.dto';
-import { ChangePostStatusDto } from './dto/change-post-status.dto';
 import { QueryDto } from './dto/query.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -15,23 +14,12 @@ export class PostsService {
     return await this.prismaService.post.create({
       data: {
         title: createPostDto.title,
-        mode: createPostDto.mode,
-        price: createPostDto.price,
-        thumbnail: createPostDto.thumbnail,
-        images: createPostDto.images,
-        author: {
-          connect: {
-            id: userId,
-          },
-        },
-        property: {
-          connect: {
-            id: createPostDto.propertyId,
-          },
-        },
-        attrs: createPostDto.attrIds
+        description: createPostDto.description,
+        property: createPostDto.propertyId
           ? {
-              connect: createPostDto.attrIds.map((id) => ({ id })),
+              connect: {
+                id: createPostDto.propertyId,
+              },
             }
           : undefined,
         amenities: createPostDto.amenityIds
@@ -39,22 +27,29 @@ export class PostsService {
               connect: createPostDto.amenityIds.map((id) => ({ id })),
             }
           : undefined,
-        status: PostStatus.pending,
-        address: {
-          detail: createPostDto.address.detail,
-          provinceId: createPostDto.address.provinceId,
-          districtId: createPostDto.address.districtId,
-          wardId: createPostDto.address.wardId,
+        price: createPostDto.price,
+        thumb: createPostDto.thumb,
+        images: createPostDto.images,
+        author: {
+          connect: {
+            id: userId,
+          },
         },
+        status: createPostDto.status,
         area: createPostDto.area,
-        depositCharge: createPostDto.depositCharge,
-        electricityFee: createPostDto.electricityFee,
-        waterFee: createPostDto.waterFee,
+        address: {
+          province: createPostDto.address.province,
+          district: createPostDto.address.district,
+          ward: createPostDto.address.ward,
+          detail: createPostDto.address.detail,
+          lng: createPostDto.address.lng,
+          lat: createPostDto.address.lat,
+          misc: createPostDto.address.misc,
+        },
       },
       include: {
         author: true,
         property: true,
-        attrs: true,
         amenities: true,
       },
     });
@@ -101,33 +96,26 @@ export class PostsService {
         id: 'asc',
       },
       include: {
-        author: true,
         property: true,
-        attrs: true,
         amenities: true,
+        author: true,
         savedBy: true,
       },
     });
   }
 
   async findOne(id: string) {
-    const post = await this.prismaService.post.findUnique({
+    return await this.prismaService.post.findUniqueOrThrow({
       where: {
         id,
       },
       include: {
-        author: true,
         property: true,
-        attrs: true,
         amenities: true,
+        author: true,
         savedBy: true,
       },
     });
-    if (!post) {
-      throw new NotFoundException();
-    }
-
-    return post;
   }
 
   async update(id: string, updatePostDto: UpdatePostDto) {
@@ -137,9 +125,7 @@ export class PostsService {
       },
       data: {
         title: updatePostDto.title,
-        mode: updatePostDto.mode,
         price: updatePostDto.price,
-        thumbnail: updatePostDto.thumbnail,
         images: updatePostDto.images,
         property: updatePostDto.propertyId
           ? {
@@ -148,23 +134,16 @@ export class PostsService {
               },
             }
           : undefined,
-        attrs: updatePostDto.attrIds
-          ? {
-              connect: updatePostDto.attrIds.map((id) => ({ id })),
-            }
-          : undefined,
         amenities: updatePostDto.amenityIds
           ? {
               connect: updatePostDto.amenityIds.map((id) => ({ id })),
             }
           : undefined,
-        address: updatePostDto.address,
       },
       include: {
-        author: true,
         property: true,
-        attrs: true,
         amenities: true,
+        author: true,
         savedBy: true,
       },
     });
@@ -195,7 +174,6 @@ export class PostsService {
       },
       include: {
         property: true,
-        attrs: true,
         amenities: true,
         savedBy: true,
       },
@@ -211,10 +189,9 @@ export class PostsService {
         status: changePostStatusDto.status,
       },
       include: {
-        author: true,
         property: true,
-        attrs: true,
         amenities: true,
+        author: true,
         savedBy: true,
       },
     });

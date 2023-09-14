@@ -28,7 +28,7 @@ export class PermissionsService {
   }
 
   async findAll() {
-    return this.prismaService.permission.findMany({
+    return await this.prismaService.permission.findMany({
       include: {
         group: true,
         roles: true,
@@ -70,7 +70,7 @@ export class PermissionsService {
   }
 
   async remove(id: string) {
-    return this.prismaService.permission.delete({
+    return await this.prismaService.permission.delete({
       where: {
         id,
       },

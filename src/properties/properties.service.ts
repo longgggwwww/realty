@@ -13,7 +13,7 @@ export class PropertiesService {
   ) {}
 
   async create(createPropertyDto: CreatePropertyDto) {
-    return this.prismaService.property.create({
+    return await this.prismaService.property.create({
       data: {
         name: createPropertyDto.name,
         description: createPropertyDto.description,

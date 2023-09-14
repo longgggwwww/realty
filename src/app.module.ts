@@ -3,8 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { MulterModule } from '@nestjs/platform-express';
-import configuration from 'config/configuration';
+import { ServiceAccount } from 'firebase-admin';
+import * as credentials from 'firebase-admin.json';
+import { FirebaseModule } from 'nestjs-firebase';
 import { PrismaModule, loggingMiddleware } from 'nestjs-prisma';
+import { AccountsModule } from './accounts/accounts.module';
 import { AmenitiesModule } from './amenities/amenities.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -20,15 +23,14 @@ import { RolesModule } from './roles/roles.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [configuration],
     }),
     JwtModule.registerAsync({
       global: true,
       useFactory(configService: ConfigService) {
         return {
-          secret: configService.get('jwt.access_token.secret'),
+          secret: configService.get<string>('ACCESS_TOKEN_SECRET'),
           signOptions: {
-            expiresIn: configService.get('jwt.access_token.expired_in'),
+            expiresIn: configService.get<string>('ACCESS_TOKEN_EXPIRED_TIME'),
           },
         };
       },
@@ -36,22 +38,25 @@ import { RolesModule } from './roles/roles.module';
     }),
     PrismaModule.forRootAsync({
       isGlobal: true,
-      useFactory(configService: ConfigService) {
+      useFactory() {
         return {
-          prismaOptions: {
-            datasourceUrl: configService.get('db.mongo.url'),
-          },
           middlewares: [loggingMiddleware()],
         };
       },
-      inject: [ConfigService],
+    }),
+    FirebaseModule.forRootAsync({
+      useFactory() {
+        return {
+          googleApplicationCredential: credentials as ServiceAccount,
+        };
+      },
     }),
     MulterModule.registerAsync({
       useFactory(configService: ConfigService) {
         return {
           limits: {
-            fieldSize: configService.get('upload.max_number_file_size'),
-            files: configService.get('upload.max_number_file_upload'),
+            fileSize: configService.get<number>('MAX_SIZE_PER_FILE_UPLOAD'),
+            files: configService.get<number>('MAX_NUMBER_FILE_UPLOAD'),
           },
         };
       },
@@ -63,6 +68,7 @@ import { RolesModule } from './roles/roles.module';
     RolesModule,
     PropertiesModule,
     AmenitiesModule,
+    AccountsModule,
     // UsersModule,
     // EventsModule,
     // FirebaseModule,
@@ -73,14 +79,8 @@ import { RolesModule } from './roles/roles.module';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: PermissionsGuard,
-    },
+    { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: PermissionsGuard },
   ],
 })
 export class AppModule {}

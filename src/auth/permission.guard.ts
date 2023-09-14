@@ -10,7 +10,7 @@ import { Permission } from './permission.enum';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {}
 
   canActivate(ctx: ExecutionContext): boolean {
     const requiredPermissions = this.reflector.getAllAndOverride<Permission[]>(
@@ -31,6 +31,6 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    throw new ForbiddenException('Không có quyền truy cập');
+    throw new ForbiddenException('Permission denined');
   }
 }

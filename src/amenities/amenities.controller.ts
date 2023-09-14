@@ -12,6 +12,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AmenitiesService } from './amenities.service';
 import { CreateAmenityDto } from './dto/create-amenity.dto';

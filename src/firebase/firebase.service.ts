@@ -8,10 +8,10 @@ export class FirebaseService {
   private app: admin.app.App;
 
   constructor() {
-    this.app = admin.initializeApp({
-      credential: admin.credential.cert({ ...firebaseConfig }),
-      storageBucket: 'hello-world',
-    });
+    // this.app = admin.initializeApp({
+    //   credential: admin.credential.cert({ ...firebaseConfig }),
+    //   storageBucket: 'hello-world',
+    // });
   }
 
   getAuth() {

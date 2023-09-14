@@ -1,7 +1,6 @@
 export enum PostStatus {
-  displayed = 'displayed',
-  deleted = 'deleted',
-  pending = 'pending',
-  accepted = 'accepted',
-  rejected = 'rejected',
+  Pending = 'Pending',
+  Published = 'Published',
+  Sold = 'Sold',
+  Archived = 'Archived',
 }

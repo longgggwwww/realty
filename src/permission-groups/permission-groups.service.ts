@@ -9,7 +9,7 @@ export class PermissionGroupsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createPermissionGroupDto: CreatePermissionGroupDto) {
-    return await this.prismaService.permGroup.create({
+    return await this.prismaService.permissionGroup.create({
       data: {
         name: createPermissionGroupDto.name,
         description: createPermissionGroupDto.description,
@@ -18,7 +18,7 @@ export class PermissionGroupsService {
   }
 
   async findAll() {
-    return await this.prismaService.permGroup.findMany({
+    return await this.prismaService.permissionGroup.findMany({
       include: {
         permissions: true,
       },
@@ -26,7 +26,7 @@ export class PermissionGroupsService {
   }
 
   async findOne(id: string) {
-    return await this.prismaService.permGroup.findUniqueOrThrow({
+    return await this.prismaService.permissionGroup.findUniqueOrThrow({
       where: {
         id,
       },
@@ -37,7 +37,7 @@ export class PermissionGroupsService {
   }
 
   async update(id: string, updatePermissionGroupDto: UpdatePermissionGroupDto) {
-    return await this.prismaService.permGroup.update({
+    return await this.prismaService.permissionGroup.update({
       where: {
         id,
       },
@@ -52,18 +52,18 @@ export class PermissionGroupsService {
   }
 
   async remove(id: string) {
-    return await this.prismaService.permGroup.delete({
+    return await this.prismaService.permissionGroup.delete({
       where: {
         id,
       },
     });
   }
 
-  async removeBatch(deletePermissionsGroupDto: DeletePermissionGroupDto) {
-    return await this.prismaService.permGroup.deleteMany({
+  async removeBatch(deletePermissionGroupDto: DeletePermissionGroupDto) {
+    return await this.prismaService.permissionGroup.deleteMany({
       where: {
         id: {
-          in: deletePermissionsGroupDto.ids,
+          in: deletePermissionGroupDto.ids,
         },
       },
     });

@@ -37,6 +37,7 @@
     "firebase-admin": "^11.10.1",
     "googleapis": "^123.0.0",
     "js-yaml": "^4.1.0",
+    "nestjs-firebase": "^10.1.0",
     "nestjs-prisma": "^0.22.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

@@ -12,41 +12,31 @@ datasource db {
 }
 
 model Property {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
   icon        String?
+  amenities   Amenity[] @relation(fields: [amenityIds], references: [id])
+  amenityIds  String[]  @db.ObjectId // tiện ích
+  posts       Post[] // bài đăng sở hữu loại nhà đất này
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  // Tiện ích
-  amenities  Amenity[] @relation(fields: [amenityIds], references: [id])
-  amenityIds String[]  @db.ObjectId
-
-  // Bài đăng về loại bds này
-  posts Post[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("properties") // loại bds
+  @@map("properties") // loại nhà đất
 }
 
 model Amenity {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
   key         String
   name        String
   description String?
   icon        String?
-
-  // Bds chứa tiện ích
   properties  Property[] @relation(fields: [propertyIds], references: [id])
-  propertyIds String[]   @db.ObjectId
-
-  // Bài đăng chứa tiện ích
-  posts   Post[]   @relation(fields: [postIds], references: [id])
-  postIds String[] @db.ObjectId
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  propertyIds String[]   @db.ObjectId // loại nhà đất nào có tiện ích này
+  posts       Post[]     @relation(fields: [postIds], references: [id])
+  postIds     String[]   @db.ObjectId // bài đăng nào chứa tiện ích này
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@map("amenities") // tiện ích
 }
@@ -56,101 +46,84 @@ model Post {
   title       String
   description String?
   property    Property   @relation(fields: [propertyId], references: [id])
-  propertyId  String     @db.ObjectId
+  propertyId  String     @db.ObjectId // loại
+  amenities   Amenity[]  @relation(fields: [amenityIds], references: [id])
+  amenityIds  String[]   @db.ObjectId // tiện ích
   price       Int
   area        Float
   thumb       String
   images      String[]
-  status      PostStatus
+  status      PostStatus @default(Pending)
   address     Address
   views       Int        @default(0)
-
-  // Tiện ích
-  amenities  Amenity[] @relation(fields: [amenityIds], references: [id])
-  amenityIds String[]  @db.ObjectId
-
-  // Tác giả của bài viết
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String @db.ObjectId
-
-  // Người lưu bài viết này
-  savedBy    User[]   @relation(name: "save-posts", fields: [savedByIds], references: [id])
-  savedByIds String[] @db.ObjectId
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  author      User       @relation(fields: [authorId], references: [id])
+  authorId    String     @db.ObjectId
+  savedBy     User[]     @relation(name: "save-posts", fields: [savedByIds], references: [id])
+  savedByIds  String[]   @db.ObjectId // lưu bởi ai
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@map("posts")
 }
 
 enum PostStatus {
-  pending
-  published
-  sold // đã bán
-  archived // đã lưu trữ
+  Pending
+  Published
+  Sold // đã bán
+  Archived // đã lưu trữ
+}
+
+type Address {
+  province String
+  district String
+  ward     String
+  detail   String
+  lng      Float? // kinh độ
+  lat      Float? // vĩ độ
+  misc     Json? // nội dung phụ như viewport, ... client sử dụng để lưu trữ
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
   dob           DateTime?
-  gender        Boolean?
+  gender        Gender       @default(Other)
   phone         String?
   email         String?
-  emailVerified Boolean?
+  emailVerified Boolean      @default(false)
   about         String?
   address       Address?
   avatar        String?
   background    String?
-  disabled      Boolean?  @default(false) // vô hiệu hóa tài khoản
-
-  // Tài khoản liên kết
-  accounts Account[]
-
-  // Vai trò của người dùng
-  role   Role?   @relation(fields: [roleId], references: [id])
-  roleId String? @db.ObjectId
-
-  // Quyền đặc biệt 
+  disabled      Boolean      @default(false) // vô hiệu hóa tài khoản
+  accounts      Account[]
+  posts         Post[] // bài viết đã tạo
+  role          Role?        @relation(fields: [roleId], references: [id])
+  roleId        String?      @db.ObjectId
   permissions   Permission[] @relation(fields: [permissionIds], references: [id])
-  permissionIds String[]     @db.ObjectId
-
-  // Bài viết đã tạo
-  posts Post[]
-
-  // Bài viết đã lưu
-  savedPosts  Post[]   @relation(name: "save-posts", fields: [savePostIds], references: [id])
-  savePostIds String[] @db.ObjectId
-
-  // Hình thức đăng nhập đã sử dụng
-  providers Providers[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  permissionIds String[]     @db.ObjectId // quyền đặc biệt
+  savedPosts    Post[]       @relation(name: "save-posts", fields: [savePostIds], references: [id])
+  savePostIds   String[]     @db.ObjectId // bài viết đã lưu
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@map("users")
 }
 
-enum Providers {
-  phone
-  gg
-  fb
-}
-
-type Address {
-  detail     String
-  body       Json?
-  lng        String
-  lat        String
-  provinceId String
-  districtId String
-  wardId     String
+enum Gender {
+  Male
+  Female
+  Other
 }
 
 model Account {
-  uid    String @id @map("_id") // uid từ firebase
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @db.ObjectId
+  uid      String @id @map("_id") // uid từ firebase
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String @db.ObjectId
+  provider String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("accounts")
 }
@@ -162,33 +135,29 @@ model Role {
   description   String?
   permissions   Permission[] @relation(fields: [permissionIds], references: [id])
   permissionIds String[]     @db.ObjectId
-
-  // Người dùng đang sở hữu vai trò này
-  users User[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  cfg Config[]
+  users         User[]
+  cfg           Setting[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@map("roles") // vai trò của người dùng
 }
 
 model Permission {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  code        String    @unique
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  code        String          @unique
   description String?
-  group       PermGroup @relation(fields: [groupId], references: [id])
-  groupId     String    @db.ObjectId
-  roles       Role[]    @relation(fields: [roleIds], references: [id])
-  roleIds     String[]  @db.ObjectId
-  users       User[]    @relation(fields: [userIds], references: [id])
-  userIds     String[]  @db.ObjectId
+  group       PermissionGroup @relation(fields: [groupId], references: [id])
+  groupId     String          @db.ObjectId
+  roles       Role[]          @relation(fields: [roleIds], references: [id])
+  roleIds     String[]        @db.ObjectId
+  users       User[]          @relation(fields: [userIds], references: [id])
+  userIds     String[]        @db.ObjectId
 
   @@map("permissions") // quyền hạn
 }
 
-model PermGroup {
+model PermissionGroup {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
@@ -197,16 +166,13 @@ model PermGroup {
   @@map("permission-groups") // nhóm quyền
 }
 
-model Config {
-  id String @id @map("_id") @db.ObjectId
+model Setting {
+  id        String   @id @map("_id") @db.ObjectId
+  roleDef   Role     @relation(fields: [roleDefId], references: [id])
+  roleDefId String   @db.ObjectId // role mặc định dành cho user khi được tạo
+  carousel  Carousel
 
-  // Role mặc định cho user được tạo
-  roleDef Role   @relation(fields: [roleId], references: [id])
-  roleId  String @db.ObjectId
-
-  carousel Carousel
-
-  @@map("config") // config hệ thống
+  @@map("settings") // setting hệ thống
 }
 
 type Carousel {
@@ -215,6 +181,6 @@ type Carousel {
 
 type Slide {
   image   String
-  appPaht String
-  index   Int
+  appPath String
+  idx     Int
 }

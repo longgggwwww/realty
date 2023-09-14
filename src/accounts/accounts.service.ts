@@ -1,47 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { UserRecord } from 'firebase-admin/lib/auth/user-record';
 import { PrismaService } from 'nestjs-prisma';
-import { UsersService } from '../users/users.service';
+import { CreateAccountDto } from './dto/create-account.dto';
 
 @Injectable()
 export class AccountsService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  async create(record: UserRecord) {
-    const user = await this.usersService.create({
-      profile: {
-        name: record.displayName,
-        phone: record.phoneNumber,
-        email: record.email,
-        emailVerified: record.emailVerified,
-        avatar: record.photoURL,
+  async create(createAccountDto: CreateAccountDto) {
+    return await this.prismaService.account.create({
+      data: {
+        uid: createAccountDto.uid,
+        user: {
+          connect: {
+            id: createAccountDto.userId,
+          },
+        },
+        provider: createAccountDto.provider,
       },
-      providers: record.providerData.map((provider) => provider.providerId),
-      disabled: record.disabled,
+      include: {
+        user: true,
+      },
     });
-
-    // Tạo tài khoản link vào người dùng mới
-    // const account = await this.prismaService.account.create({
-    //   data: {
-    //     uid: record.uid,
-    //     user: {
-    //       connect: {
-    //         id: user.id,
-    //       },
-    //     },
-    //   },
-    //   include: {
-    //     user: true,
-    //   },
-    // });
-
-    // return account;
   }
 
-  async findByUID(uid: string) {
+  async findUnique(uid: string) {
     return await this.prismaService.account.findUnique({
       where: {
         uid,

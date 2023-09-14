@@ -1,11 +1,15 @@
 import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateAccountDto {
-  @IsNotEmpty()
   @IsMongoId()
+  @IsNotEmpty()
   userId: string;
 
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   uid: string;
+
+  @IsString()
+  @IsNotEmpty()
+  provider: string;
 }
