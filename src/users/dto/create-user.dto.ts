@@ -4,13 +4,24 @@ import {
   IsDateString,
   IsEmail,
   IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
   IsString,
   IsUrl,
   ValidateNested,
 } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
+import { Type } from 'class-transformer';
+
+class Account {
+  @IsString()
+  @IsNotEmpty()
+  uid: string;
+
+  @IsString()
+  @IsNotEmpty()
+  provider: string;
+}
 
 export class CreateUserDto {
   @IsString()
@@ -55,5 +66,10 @@ export class CreateUserDto {
 
   @IsBoolean()
   @IsOptional()
-  disabled: boolean;
+  disabled?: boolean;
+
+  @Type(() => Account)
+  @ValidateNested({ each: true })
+  @IsOptional()
+  accounts: Account[];
 }

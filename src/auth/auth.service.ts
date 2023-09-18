@@ -4,14 +4,13 @@ import { FirebaseAdmin, InjectFirebaseAdmin } from 'nestjs-firebase';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UsersService } from 'src/users/users.service';
-import { AccountsService } from 'src/accounts/accounts.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
-    private readonly accountsService: AccountsService,
     @InjectFirebaseAdmin() private readonly firebaseService: FirebaseAdmin,
   ) {}
 
@@ -20,11 +19,11 @@ export class AuthService {
       const decodedIdToken = await this.firebaseService.auth.verifyIdToken(
         loginDto.token,
       );
-      const [account, userRecord] = await Promise.all([
-        this.accountsService.findUnique(decodedIdToken.uid),
+      const [user, userRecord] = await Promise.all([
+        this.usersService.findByUID(decodedIdToken.uid),
         this.firebaseService.auth.getUser(decodedIdToken.uid),
       ]);
-      if (!account) {
+      if (!user) {
         const user = await this.usersService.create({
           name: userRecord.displayName,
           avatar: userRecord.photoURL,
@@ -32,20 +31,38 @@ export class AuthService {
           email: userRecord.email,
           emailVerified: userRecord.emailVerified,
           disabled: userRecord.disabled,
+          accounts: [
+            {
+              uid: userRecord.uid,
+              provider: userRecord.providerData[0].providerId,
+            },
+          ],
         });
-        const account = await this.accountsService.create({
-          uid: userRecord.uid,
-          userId: user.id,
-          provider: userRecord.providerData[0].providerId,
-        });
+
+        return {
+          user,
+          accessToken: await this.generateToken(user),
+        };
       }
+
+      return {
+        user,
+        accessToken: await this.generateToken(user),
+      };
     } catch (err) {
       console.log(err);
       return err;
     }
   }
 
-  generateToken(refreshTokenDto: RefreshTokenDto) {
-    return 'hello world';
+  async generateToken(user: User) {
+    return await this.jwtService.signAsync({
+      id: user.id,
+    });
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    console.log('debug:', refreshTokenDto);
+    console.log('refresh token!');
   }
 }

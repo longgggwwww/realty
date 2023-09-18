@@ -117,11 +117,10 @@ enum Gender {
 }
 
 model Account {
-  uid      String @id @map("_id") // uid từ firebase
-  user     User   @relation(fields: [userId], references: [id])
-  userId   String @db.ObjectId
-  provider String
-
+  uid       String   @id @map("_id") // uid từ firebase
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  provider  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

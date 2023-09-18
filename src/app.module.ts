@@ -18,6 +18,7 @@ import { PermissionGroupsModule } from './permission-groups/permission-groups.mo
 import { PermissionsModule } from './permissions/permissions.module';
 import { PropertiesModule } from './properties/properties.module';
 import { RolesModule } from './roles/roles.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -69,7 +70,7 @@ import { RolesModule } from './roles/roles.module';
     PropertiesModule,
     AmenitiesModule,
     AccountsModule,
-    // UsersModule,
+    UsersModule,
     // EventsModule,
     // FirebaseModule,
     // GgdriveModule,
