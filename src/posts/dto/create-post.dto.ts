@@ -73,8 +73,8 @@ export class CreatePostDto {
   @Min(0)
   @Max(1000)
   @IsNumber()
-  @IsOptional()
-  area?: number;
+  @IsNotEmpty()
+  area: number;
 
   @IsUrl()
   @IsOptional()

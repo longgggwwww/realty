@@ -16,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
 import { PermissionsGuard } from './auth/permission.guard';
 import { PermissionGroupsModule } from './permission-groups/permission-groups.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { PostsModule } from './posts/posts.module';
 import { PropertiesModule } from './properties/properties.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
@@ -71,11 +72,11 @@ import { UsersModule } from './users/users.module';
     AmenitiesModule,
     AccountsModule,
     UsersModule,
+    PostsModule,
     // EventsModule,
     // FirebaseModule,
     // GgdriveModule,
     // CloudinaryModule,
-    // PostsModule,
   ],
   controllers: [AppController],
   providers: [

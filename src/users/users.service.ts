@@ -6,126 +6,168 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-	constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
-	async create(createUserDto: CreateUserDto) {
-		return await this.prismaService.user.create({
-			data: {
-				name: createUserDto.name,
-				dob: createUserDto.dob,
-				gender: createUserDto.gender,
-				phone: createUserDto.phone,
-				email: createUserDto.email,
-				emailVerified: createUserDto.emailVerified,
-				about: createUserDto.about,
-				address: createUserDto.address,
-				avatar: createUserDto.avatar,
-				background: createUserDto.background,
-				disabled: createUserDto.disabled,
-				accounts: createUserDto.accounts
-					? {
-						create: createUserDto.accounts.map((account) => ({
-							uid: account.uid,
-							provider: account.provider,
-						})),
-					}
-					: undefined,
-			},
-			include: {
-				accounts: true,
-			},
-		});
-	}
+  async create(createUserDto: CreateUserDto) {
+    return await this.prismaService.user.create({
+      data: {
+        name: createUserDto.name,
+        dob: createUserDto.dob,
+        gender: createUserDto.gender,
+        phone: createUserDto.phone,
+        email: createUserDto.email,
+        emailVerified: createUserDto.emailVerified,
+        about: createUserDto.about,
+        address: createUserDto.address,
+        avatar: createUserDto.avatar,
+        background: createUserDto.background,
+        disabled: createUserDto.disabled,
+        accounts: createUserDto.accounts
+          ? {
+              create: createUserDto.accounts.map((account) => ({
+                uid: account.uid,
+                provider: account.provider,
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        accounts: true,
+      },
+    });
+  }
 
-	async findAll() {
-		return await this.prismaService.user.findMany({
-			include: {
-				accounts: true,
-				role: true,
-				permissions: true,
-				posts: true,
-				savedPosts: true,
-			},
-		});
-	}
+  async findAll() {
+    return await this.prismaService.user.findMany({
+      include: {
+        accounts: true,
+        role: true,
+        permissions: true,
+        posts: true,
+        savedPosts: true,
+      },
+    });
+  }
 
-	async findOne(id: string) {
-		return await this.prismaService.user.findUniqueOrThrow({
-			where: {
-				id,
-			},
-			include: {
-				accounts: true,
-				role: true,
-				permissions: true,
-				posts: true,
-				savedPosts: true,
-			},
-		});
-	}
+  async findOne(id: string) {
+    return await this.prismaService.user.findUniqueOrThrow({
+      where: {
+        id,
+      },
+      include: {
+        accounts: true,
+        role: true,
+        permissions: true,
+        posts: true,
+        savedPosts: true,
+      },
+    });
+  }
 
-	async findByUID(uid: string) {
-		return await this.prismaService.user.findFirst({
-			where: {
-				accounts: {
-					some: {
-						uid,
-					},
-				},
-			},
-			include: {
-				accounts: true,
-				role: true,
-				permissions: true,
-				posts: true,
-				savedPosts: true,
-			},
-		});
-	}
+  async findByUID(uid: string) {
+    return await this.prismaService.user.findFirst({
+      where: {
+        accounts: {
+          some: {
+            uid,
+          },
+        },
+      },
+      include: {
+        accounts: true,
+        role: true,
+        permissions: true,
+        posts: true,
+        savedPosts: true,
+      },
+    });
+  }
 
-	async update(id: string, updateUserDto: UpdateUserDto) {
-		return await this.prismaService.user.update({
-			where: {
-				id,
-			},
-			data: {
-				name: updateUserDto.name,
-				dob: updateUserDto.dob,
-				gender: updateUserDto.gender,
-				phone: updateUserDto.phone,
-				email: updateUserDto.email,
-				emailVerified: updateUserDto.emailVerified,
-				about: updateUserDto.about,
-				address: updateUserDto.address,
-				avatar: updateUserDto.avatar,
-				background: updateUserDto.background,
-				disabled: updateUserDto.disabled,
-			},
-			include: {
-				accounts: true,
-				role: true,
-				permissions: true,
-				posts: true,
-				savedPosts: true,
-			},
-		});
-	}
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    return await this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        name: updateUserDto.name,
+        dob: updateUserDto.dob,
+        gender: updateUserDto.gender,
+        phone: updateUserDto.phone,
+        email: updateUserDto.email,
+        emailVerified: updateUserDto.emailVerified,
+        about: updateUserDto.about,
+        address: updateUserDto.address,
+        avatar: updateUserDto.avatar,
+        background: updateUserDto.background,
+        disabled: updateUserDto.disabled,
+      },
+      include: {
+        accounts: true,
+        role: true,
+        permissions: true,
+        posts: true,
+        savedPosts: true,
+      },
+    });
+  }
 
-	async remove(id: string) {
-		return await this.prismaService.user.delete({
-			where: {
-				id,
-			},
-		});
-	}
+  async remove(id: string) {
+    return await this.prismaService.user.delete({
+      where: {
+        id,
+      },
+    });
+  }
 
-	async removeBatch(deleteUserDto: DeleteUserDto) {
-		return await this.prismaService.user.deleteMany({
-			where: {
-				id: {
-					in: deleteUserDto.ids,
-				},
-			},
-		});
-	}
+  async removeBatch(deleteUserDto: DeleteUserDto) {
+    return await this.prismaService.user.deleteMany({
+      where: {
+        id: {
+          in: deleteUserDto.ids,
+        },
+      },
+    });
+  }
+
+  async savePost(id: string, userId: string) {
+    return await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        savePostIds: {
+          push: id,
+        },
+      },
+      include: {
+        accounts: true,
+        role: true,
+        permissions: true,
+        posts: true,
+        savedPosts: true,
+      },
+    });
+  }
+
+  async unsavePost(id: string, userId: string) {
+    return await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        savedPosts: {
+          disconnect: {
+            id,
+          },
+        },
+      },
+      include: {
+        accounts: true,
+        role: true,
+        permissions: true,
+        posts: true,
+        savedPosts: true,
+      },
+    });
+  }
 }

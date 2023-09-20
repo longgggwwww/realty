@@ -8,7 +8,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   async create(userId: string, createPostDto: CreatePostDto) {
     return await this.prismaService.post.create({
@@ -17,15 +17,15 @@ export class PostsService {
         description: createPostDto.description,
         property: createPostDto.propertyId
           ? {
-              connect: {
-                id: createPostDto.propertyId,
-              },
-            }
+            connect: {
+              id: createPostDto.propertyId,
+            },
+          }
           : undefined,
         amenities: createPostDto.amenityIds
           ? {
-              connect: createPostDto.amenityIds.map((id) => ({ id })),
-            }
+            connect: createPostDto.amenityIds.map((id) => ({ id })),
+          }
           : undefined,
         price: createPostDto.price,
         thumb: createPostDto.thumb,
@@ -60,25 +60,25 @@ export class PostsService {
       where: {
         title: queryDto.title
           ? {
-              contains: queryDto.title,
-              mode: 'insensitive',
-            }
+            contains: queryDto.title,
+            mode: 'insensitive',
+          }
           : undefined,
         property: queryDto.propertyIds
           ? {
-              id: {
-                in: queryDto.propertyIds,
-              },
-            }
+            id: {
+              in: queryDto.propertyIds,
+            },
+          }
           : undefined,
         amenities: queryDto.amenityIds
           ? {
-              some: {
-                id: {
-                  in: queryDto.amenityIds,
-                },
+            some: {
+              id: {
+                in: queryDto.amenityIds,
               },
-            }
+            },
+          }
           : undefined,
         price: {
           gte: queryDto.minPrice,
@@ -88,8 +88,8 @@ export class PostsService {
       skip: queryDto.cursor ? 1 : undefined,
       cursor: queryDto.cursor
         ? {
-            id: queryDto.cursor,
-          }
+          id: queryDto.cursor,
+        }
         : undefined,
       take: queryDto.take,
       orderBy: {
@@ -129,15 +129,15 @@ export class PostsService {
         images: updatePostDto.images,
         property: updatePostDto.propertyId
           ? {
-              connect: {
-                id: updatePostDto.propertyId,
-              },
-            }
+            connect: {
+              id: updatePostDto.propertyId,
+            },
+          }
           : undefined,
         amenities: updatePostDto.amenityIds
           ? {
-              connect: updatePostDto.amenityIds.map((id) => ({ id })),
-            }
+            connect: updatePostDto.amenityIds.map((id) => ({ id })),
+          }
           : undefined,
       },
       include: {

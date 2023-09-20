@@ -51,7 +51,7 @@ model Post {
   amenityIds  String[]   @db.ObjectId // tiện ích
   price       Int
   area        Float
-  thumb       String
+  thumb       String?
   images      String[]
   status      PostStatus @default(Pending)
   address     Address
