@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { MulterModule } from '@nestjs/platform-express';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { ServiceAccount } from 'firebase-admin';
 import * as credentials from 'firebase-admin.json';
 import { FirebaseModule } from 'nestjs-firebase';
@@ -20,11 +21,6 @@ import { PostsModule } from './posts/posts.module';
 import { PropertiesModule } from './properties/properties.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { FilesModule } from './files/files.module';
-import { Files1Module } from './files1/files1.module';
-import { File2sModule } from './file2s/file2s.module';
-import { File3sModule } from './file3s/file3s.module';
 
 @Module({
   imports: [
@@ -93,10 +89,6 @@ import { File3sModule } from './file3s/file3s.module';
     AccountsModule,
     UsersModule,
     PostsModule,
-    FilesModule,
-    Files1Module,
-    File2sModule,
-    File3sModule,
     // EventsModule,
     // FirebaseModule,
     // GgdriveModule,
