@@ -89,10 +89,6 @@ import { UsersModule } from './users/users.module';
     AccountsModule,
     UsersModule,
     PostsModule,
-    // EventsModule,
-    // FirebaseModule,
-    // GgdriveModule,
-    // CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [
