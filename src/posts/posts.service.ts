@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
-import { ChangePostStatusDto } from './dto/change-status.dto';
+import { BrowsePostDto } from './dto/browse-post.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { DeletePostDto } from './dto/delete-post.dto';
 import { QueryDto } from './dto/query.dto';
@@ -180,13 +180,13 @@ export class PostsService {
     });
   }
 
-  async changePostStatus(id: string, changePostStatusDto: ChangePostStatusDto) {
+  async browsePost(id: string, browsePostDto: BrowsePostDto) {
     return await this.prismaService.post.update({
       where: {
         id,
       },
       data: {
-        status: changePostStatusDto.status,
+        status: browsePostDto.status,
       },
       include: {
         property: true,
@@ -195,5 +195,45 @@ export class PostsService {
         savedBy: true,
       },
     });
+  }
+
+  async savePost(id: string, userId: string) {
+    return await this.prismaService.post.update({
+      where: {
+        id
+      },
+      data: {
+        savedByIds: {
+          push: userId
+        }
+      },
+      include: {
+        property: true,
+        amenities: true,
+        author: true,
+        savedBy: true,
+      },
+    })
+  }
+
+  async unsavePost(id: string, userId: string) {
+    return await this.prismaService.post.update({
+      where: {
+        id
+      },
+      data: {
+        savedBy: {
+          disconnect: {
+            id: userId
+          }
+        }
+      },
+      include: {
+        property: true,
+        amenities: true,
+        author: true,
+        savedBy: true,
+      },
+    })
   }
 }

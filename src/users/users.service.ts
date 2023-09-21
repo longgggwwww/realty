@@ -6,7 +6,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
     return await this.prismaService.user.create({
@@ -24,11 +24,11 @@ export class UsersService {
         disabled: createUserDto.disabled,
         accounts: createUserDto.accounts
           ? {
-              create: createUserDto.accounts.map((account) => ({
-                uid: account.uid,
-                provider: account.provider,
-              })),
-            }
+            create: createUserDto.accounts.map((account) => ({
+              uid: account.uid,
+              provider: account.provider,
+            })),
+          }
           : undefined,
       },
       include: {
@@ -125,48 +125,6 @@ export class UsersService {
         id: {
           in: deleteUserDto.ids,
         },
-      },
-    });
-  }
-
-  async savePost(id: string, userId: string) {
-    return await this.prismaService.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        savePostIds: {
-          push: id,
-        },
-      },
-      include: {
-        accounts: true,
-        role: true,
-        permissions: true,
-        posts: true,
-        savedPosts: true,
-      },
-    });
-  }
-
-  async unsavePost(id: string, userId: string) {
-    return await this.prismaService.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        savedPosts: {
-          disconnect: {
-            id,
-          },
-        },
-      },
-      include: {
-        accounts: true,
-        role: true,
-        permissions: true,
-        posts: true,
-        savedPosts: true,
       },
     });
   }

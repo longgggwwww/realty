@@ -13,4 +13,10 @@ export enum Permission {
   CreatePermission = 'CREATE_USER',
   UpdatePermission = 'UPDATE_USER',
   DeletePermission = 'DELETE_USER',
+
+  GetPost = 'GET_POST',
+  CreatePost = 'CREATE_POST',
+  UpdatePost = 'UPDATE_POST',
+  DeletePost = 'DELETE_POST',
+  BrowsePost = 'BROWSE_POST',
 }

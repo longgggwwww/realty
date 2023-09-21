@@ -9,7 +9,7 @@ import {
   Query,
   Request,
 } from '@nestjs/common';
-import { ChangePostStatusDto } from './dto/change-status.dto';
+import { BrowsePostDto } from './dto/browse-post.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { DeletePostDto } from './dto/delete-post.dto';
 import { QueryDto } from './dto/query.dto';
@@ -27,12 +27,28 @@ export class PostsController {
   }
 
   // Duyệt bài đăng (cho quản trị viên)
-  @Patch(':id/status')
-  changeStatus(
+  @Patch(':id/browse')
+  browsePost(
     @Param('id') id: string,
-    @Body() changePostStatusDto: ChangePostStatusDto,
+    @Body() browsePostDto: BrowsePostDto,
   ) {
-    return this.postsService.changePostStatus(id, changePostStatusDto);
+    return this.postsService.browsePost(id, browsePostDto);
+  }
+
+  // Lưu bài đăng
+  @Patch(':id/save')
+  savePost(
+    @Param('id') id: string,
+    @Request() req
+  ) {
+  }
+
+  // Bỏ lưu bài đăng
+  @Patch(':id/save')
+  unsavePost(
+    @Param('id') id: string,
+    @Request() req
+  ) {
   }
 
   @Post()
