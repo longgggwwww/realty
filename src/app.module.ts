@@ -20,12 +20,34 @@ import { PostsModule } from './posts/posts.module';
 import { PropertiesModule } from './properties/properties.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { FilesModule } from './files/files.module';
+import { Files1Module } from './files1/files1.module';
+import { File2sModule } from './file2s/file2s.module';
+import { File3sModule } from './file3s/file3s.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'medium',
+        ttl: 10000,
+        limit: 20
+      },
+      {
+        name: 'long',
+        ttl: 60000,
+        limit: 100
+      }
+    ]),
     JwtModule.registerAsync({
       global: true,
       useFactory(configService: ConfigService) {
@@ -38,13 +60,11 @@ import { UsersModule } from './users/users.module';
       },
       inject: [ConfigService],
     }),
-    PrismaModule.forRootAsync({
+    PrismaModule.forRoot({
       isGlobal: true,
-      useFactory() {
-        return {
-          middlewares: [loggingMiddleware()],
-        };
-      },
+      prismaServiceOptions: {
+        middlewares: [loggingMiddleware()],
+      }
     }),
     FirebaseModule.forRootAsync({
       useFactory() {
@@ -73,6 +93,10 @@ import { UsersModule } from './users/users.module';
     AccountsModule,
     UsersModule,
     PostsModule,
+    FilesModule,
+    Files1Module,
+    File2sModule,
+    File3sModule,
     // EventsModule,
     // FirebaseModule,
     // GgdriveModule,
@@ -85,4 +109,4 @@ import { UsersModule } from './users/users.module';
     { provide: APP_GUARD, useClass: PermissionsGuard },
   ],
 })
-export class AppModule {}
+export class AppModule { }

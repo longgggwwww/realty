@@ -236,4 +236,8 @@ export class PostsService {
       },
     })
   }
+
+  async getRelatedPosts(id: string) {
+    return await this.prismaService.post.findMany({});
+  }
 }

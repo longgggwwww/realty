@@ -51,6 +51,11 @@ export class PostsController {
   ) {
   }
 
+  @Get(':id/related')
+  getRelatedPosts(@Param() id: string) {
+    return this.postsService.getRelatedPosts(id);
+  }
+
   @Post()
   create(@Body() createPostDto: CreatePostDto, @Request() req) {
     return this.postsService.create(req.user.id, createPostDto);
